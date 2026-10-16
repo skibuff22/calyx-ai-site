@@ -1,204 +1,189 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calyx AI — AI Automation for Small Business | Save Hours Every Week</title>
-<meta name="description" content="Calyx AI builds practical AI automations for small businesses: chatbots, document processing, workflow automation, and AI-ready websites. Get a free automation audit.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Ops Kit — Make AI Coding Agents Reliable | Calyx AI</title>
+<meta name="description" content="The D.O.E. framework (Directive / Orchestration / Execution) for Claude Code, Cursor and Codex: CLAUDE.md, directive templates, execution scripts, linters and the self-annealing loop. $29, instant download.">
 <link rel="canonical" href="https://calyx-ai.net/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Calyx AI — AI Automation for Small Business">
-<meta property="og:description" content="Practical AI automations that pay for themselves: chatbots, document processing, workflow automation, and AI-ready websites.">
+<meta property="og:type" content="product">
+<meta property="og:title" content="Agent Ops Kit — the D.O.E. framework for Claude Code">
+<meta property="og:description" content="Stop babysitting your AI coding agent. Directives, deterministic scripts, linters, and a self-annealing loop that make it reliable in production. $29.">
 <meta property="og:url" content="https://calyx-ai.net/">
-<meta property="og:site_name" content="Calyx AI">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Calyx AI — AI Automation for Small Business">
-<meta name="twitter:description" content="Practical AI automations that pay for themselves. Free automation audit.">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  "name": "Calyx AI",
-  "url": "https://calyx-ai.net",
-  "email": "tdoane@calyx-ai.net",
-  "description": "AI automation consulting and implementation for small businesses: AI assistants, document intelligence, workflow automation, and AI-ready websites.",
-  "areaServed": "United States",
-  "priceRange": "$$",
-  "sameAs": []
-}
+{"@context":"https://schema.org","@type":"Product","name":"Agent Ops Kit v1","description":"The D.O.E. framework for reliable AI coding agents: CLAUDE.md, directives, execution scripts, linters, self-annealing loop, multi-agent templates.","brand":{"@type":"Brand","name":"Calyx AI"},"offers":{"@type":"Offer","price":"29.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://api.qualitytester.us/store/checkout.php?sku=AOK-1"}}
 </script>
 <style>
-:root{
-  --bg:#0b0f14;--bg2:#111823;--card:#151e2b;--line:#233042;
-  --text:#e8eef5;--muted:#9db0c3;--accent:#4fd1a5;--accent2:#3aa981;--warn:#f0b429;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-a{color:var(--accent);text-decoration:none}
-.container{max-width:1080px;margin:0 auto;padding:0 24px}
-header{position:sticky;top:0;background:rgba(11,15,20,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
-.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
-.logo{font-size:1.25rem;font-weight:800;color:var(--text)}
-.logo span{color:var(--accent)}
-.nav-links{display:flex;gap:28px;align-items:center}
-.nav-links a{color:var(--muted);font-size:.95rem}
-.nav-links a:hover{color:var(--text)}
-.btn{display:inline-block;background:var(--accent);color:#08110d;font-weight:700;padding:12px 24px;border-radius:8px;border:none;font-size:1rem;cursor:pointer;transition:background .15s}
-.btn:hover{background:var(--accent2)}
-.btn-outline{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-.btn-outline:hover{background:rgba(79,209,165,.1)}
-.hero{padding:88px 0 72px;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(79,209,165,.12),transparent)}
-.hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;font-weight:800;max-width:800px}
-.hero h1 em{color:var(--accent);font-style:normal}
-.hero p.sub{margin:20px 0 32px;font-size:1.15rem;color:var(--muted);max-width:640px}
-.hero .cta-row{display:flex;gap:16px;flex-wrap:wrap}
-.trust{margin-top:28px;color:var(--muted);font-size:.9rem}
-section{padding:72px 0}
-.kicker{color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem}
-h2{font-size:clamp(1.5rem,3.5vw,2.2rem);margin:8px 0 16px}
-.lead{color:var(--muted);max-width:680px;margin-bottom:40px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:28px}
-.card h3{font-size:1.1rem;margin-bottom:10px}
-.card p{color:var(--muted);font-size:.95rem}
-.card .price{margin-top:14px;color:var(--accent);font-weight:700;font-size:.9rem}
-.icon{width:40px;height:40px;border-radius:9px;background:rgba(79,209,165,.14);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:16px}
-.steps{counter-reset:step}
-.step{display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--line)}
-.step:last-child{border-bottom:none}
-.step-num{flex:0 0 44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800}
-.step h3{margin-bottom:6px}
-.step p{color:var(--muted);font-size:.95rem}
-.altbg{background:var(--bg2)}
-form{max-width:560px}
-label{display:block;margin:18px 0 6px;font-weight:600;font-size:.95rem}
-input,textarea,select{width:100%;background:var(--card);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:12px 14px;font-size:1rem;font-family:inherit}
-input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
-.note{color:var(--muted);font-size:.85rem;margin-top:10px}
-footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:.9rem}
-footer .container{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-@media(max-width:640px){.nav-links a:not(.btn){display:none}}
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.6}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.1;margin:0 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:700}h2{font-size:clamp(1.5rem,3.5vw,2.1rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+pre{background:#0b0d11;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#d7dae0}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.hero{padding:72px 0 48px;display:grid;grid-template-columns:1.15fr 1fr;gap:40px;align-items:center}
+.hero p.lead{font-size:1.2rem;color:var(--muted);max-width:52ch}
+.price{font-family:"Barlow Semi Condensed";font-size:2rem;font-weight:700;margin:8px 0 4px}
+.price small{font-size:.9rem;color:var(--muted);font-family:"IBM Plex Sans";font-weight:400}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:18px}
+.tiny{color:var(--muted);font-size:.9rem}
+section{padding:48px 0;border-top:1px solid var(--line)}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card h3{margin-top:0}.card p{margin:0;color:var(--muted)}
+.math{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin:18px 0}
+.math div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.math b{display:block;font-family:"Barlow Semi Condensed";font-size:2rem;color:var(--accent-2)}
+table{width:100%;border-collapse:collapse;font-size:.97rem}td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:500}
+.tree{columns:2;column-gap:40px}.tree pre{margin:0;break-inside:avoid}
+details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}summary{cursor:pointer;font-weight:600}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:32px;text-align:center}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media (max-width:820px){.hero{grid-template-columns:1fr;padding-top:40px}.math{grid-template-columns:1fr}.tree{columns:1}}
 </style>
 </head>
 <body>
-<header>
-  <div class="container nav">
-    <div class="logo">Calyx<span>AI</span></div>
-    <nav class="nav-links">
-      <a href="#services">Services</a>
-      <a href="#process">How It Works</a>
-      <a href="#about">About</a>
-      <a href="#contact" class="btn" style="padding:9px 18px">Free Audit</a>
-    </nav>
-  </div>
-</header>
+<header><div class="wrap nav">
+  <a class="brand" href="/">Calyx<span>AI</span></a>
+  <nav><a class="btn small" href="https://api.qualitytester.us/store/checkout.php?sku=AOK-1">Buy — $29</a></nav>
+</div></header>
 
-<section class="hero">
-  <div class="container">
-    <h1>Your business runs on repetitive work.<br><em>AI can do most of it.</em></h1>
-    <p class="sub">Calyx AI builds practical, affordable automations for small businesses — answering your customers, processing your paperwork, and handling the busywork — so you get hours back every week without hiring.</p>
+<main class="wrap">
+<section class="hero" style="border-top:0">
+  <div>
+    <h1>Stop babysitting your AI coding agent.</h1>
+    <p class="lead">The <strong>Agent Ops Kit</strong> is the D.O.E. framework — Directive / Orchestration / Execution — that turns Claude Code, Cursor or Codex from a clever intern into a reliable operator: it reads an SOP, runs a deterministic script, and writes what it learned back into the SOP.</p>
+    <div class="price">$29 <small>one-time · instant download · free updates · 14-day refund</small></div>
     <div class="cta-row">
-      <a class="btn" href="#contact">Get a Free Automation Audit</a>
-      <a class="btn btn-outline" href="#services">See Services</a>
+      <a class="btn" href="https://api.qualitytester.us/store/checkout.php?sku=AOK-1">Get the kit</a>
+      <a class="btn ghost" href="#inside">See what's inside</a>
     </div>
-    <p class="trust">No retainers required · Fixed-price projects · You own everything we build</p>
+    <p class="tiny">Secure checkout by Stripe. Works with Claude Code (CLAUDE.md + skills), Cursor (.cursorrules), Codex / Gemini CLI (AGENTS.md).</p>
   </div>
+  <pre aria-label="CLAUDE.md excerpt"># CLAUDE.md (excerpt)
+
+Layer 1 — Directive: SOPs in directives/*.md
+Layer 2 — Orchestration: you. Route, don't do.
+Layer 3 — Execution: scripts in executions/
+
+1. Fix the root cause, not the symptom.
+   A retry/reset/reprocess is RECOVERY,
+   never a fix.
+5. Every bug fix gets a test AND a standard.
+6. Repair → deploy → verify → THEN recover.
+
+Mandatory checks before touching:
+| Deploys   | directives/deploy_service.md |
+| Bug fixes | directives/core/bug-fix-standard.md |</pre>
 </section>
 
-<section id="services" class="altbg">
-  <div class="container">
-    <p class="kicker">Services</p>
-    <h2>Automations that pay for themselves</h2>
-    <p class="lead">Every engagement starts with the same question: what task eats the most hours or loses the most leads? Then we automate exactly that.</p>
-    <div class="grid">
-      <div class="card">
-        <div class="icon">💬</div>
-        <h3>AI Assistants &amp; Chatbots</h3>
-        <p>A trained assistant on your website or phone line that answers customer questions, books appointments, and captures leads 24/7 — instead of sending them to voicemail.</p>
-        <p class="price">From $750 setup</p>
-      </div>
-      <div class="card">
-        <div class="icon">📄</div>
-        <h3>Document Intelligence</h3>
-        <p>Invoices, contracts, intake forms, inspection reports — AI reads them, extracts what matters, and files it where it belongs. No more manual data entry.</p>
-        <p class="price">From $950 setup</p>
-      </div>
-      <div class="card">
-        <div class="icon">⚙️</div>
-        <h3>Workflow Automation</h3>
-        <p>Connect the tools you already use — email, spreadsheets, CRM, QuickBooks — so follow-ups, reminders, reports, and handoffs happen automatically.</p>
-        <p class="price">From $500 setup</p>
-      </div>
-      <div class="card">
-        <div class="icon">🌐</div>
-        <h3>AI-Ready Websites &amp; SEO</h3>
-        <p>Fast, modern websites built to rank in Google <em>and</em> get recommended by AI assistants like ChatGPT — where your next customers are already searching.</p>
-        <p class="price">From $1,200</p>
-      </div>
-    </div>
-  </div>
+<section>
+  <h2>Why agents fail on real work</h2>
+  <p>A model that's 90&nbsp;% reliable per step is 59&nbsp;% reliable over five steps. Real tasks are ten to fifty steps. If the agent <em>executes</em> everything itself — fetching, parsing, transforming, deploying — compounding error does the rest, and you end up watching it.</p>
+  <div class="math"><div><b>0.9⁵ = 59%</b>agent does every step</div><div><b>0.9³ = 73%</b>agent makes 3 decisions, scripts do the rest</div><div><b>→ 100%</b>scripts + tests, once they work</div></div>
+  <p>D.O.E. moves everything with a right answer into tested code and leaves the agent exactly one job: deciding what to run next. Then it makes the system <strong>self-annealing</strong> — every failure becomes a test, a rule, and a lint, so month three is dramatically better than week one.</p>
 </section>
 
-<section id="process">
-  <div class="container">
-    <p class="kicker">How It Works</p>
-    <h2>Simple, fixed-price, no surprises</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div><h3>Free Automation Audit</h3>
-        <p>A 30-minute call. You tell me how your business runs; I tell you exactly which tasks are automatable, what it would cost, and what it would save. No obligation — you keep the plan either way.</p></div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div><h3>Fixed-Price Build</h3>
-        <p>I build and test the automation, using your real data and your existing tools. You approve it before anything goes live. One price, agreed upfront.</p></div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div><h3>You Own It</h3>
-        <p>Everything runs in accounts you control. Optional low-cost support plan if you want me on call — but you're never locked in.</p></div>
-      </div>
-    </div>
+<section id="inside">
+  <h2>What's inside (34 files, ready to drop into any repo)</h2>
+  <div class="grid">
+    <div class="card"><h3>CLAUDE.md that enforces the loop</h3><p>The 3 layers, 6 operating principles, the self-annealing loop, a mandatory-directive-checks table, and a definition of done. Battle-tested running a real business platform.</p></div>
+    <div class="card"><h3>4 core directives</h3><p>Operating principles, self-annealing loop, bug-fix standard, agent governance — written to sync unchanged into every project you run.</p></div>
+    <div class="card"><h3>3 complete example directives</h3><p>Deploy a service, QA a website, scrape a site — each with inputs → tools → outputs → edge cases → verification, pre-loaded with the gotchas.</p></div>
+    <div class="card"><h3>7 execution scripts</h3><p>Script template (argparse, .env, retries, exit codes), directive↔script linter, secrets linter, anneal log, headless QA/SEO crawler, SSH deploy with CRLF/BOM fix, robots-aware scraper.</p></div>
+    <div class="card"><h3>Tests that make the kit eat its own rules</h3><p>12 tests for the linters, including "the kit itself passes". Every tool has a test — that's the standard.</p></div>
+    <div class="card"><h3>Multi-agent templates</h3><p>PM agent + worker agent definitions, an agent registry schema, work-authorization and meta-work-cap rules from real incidents.</p></div>
+    <div class="card"><h3>3 Claude Code skills</h3><p>qa-test, deploy, project-status — ten lines each, calling the scripts, so expensive reasoning happens once.</p></div>
+    <div class="card"><h3>3 guides</h3><p>Why D.O.E. works · Adopting it in an existing codebase (day 1 / week 1 / month 1) · Running a fleet of agents without burning a fortune.</p></div>
   </div>
+  <h3 style="margin-top:28px">File tree</h3>
+  <div class="tree"><pre>agent-ops-kit-v1/
+  START-HERE.md
+  CLAUDE.md
+  LICENSE.txt
+  CHANGELOG.md
+  directives/
+    00_template.md
+    core/operating-principles.md
+    core/self-annealing-loop.md
+    core/bug-fix-standard.md
+    core/agent-governance.md
+    examples/deploy_service.md
+    examples/qa_website.md
+    examples/scrape_website.md</pre><pre>  executions/
+    00_template.py
+    lint_directives.py
+    lint_secrets.py
+    anneal.py
+    qa_website.py
+    deploy_service.py
+    scrape_website.py
+    tests/test_lint_directives.py
+    tests/test_lint_secrets.py
+  skills/qa-test · deploy · project-status
+  agents/pm-agent.md · worker-agent.md
+         registry.example.json
+  docs/why-doe.md · adopting-doe.md
+       running-a-fleet.md</pre></div>
 </section>
 
-<section id="about" class="altbg">
-  <div class="container">
-    <p class="kicker">About</p>
-    <h2>Built by an engineer, not an agency</h2>
-    <p class="lead">Calyx AI is run by Todd Doane, a software engineer who has built and shipped production AI systems end-to-end — cloud platforms, AI document-processing pipelines, billing integrations, and modern web apps. You work directly with the person who writes the code. No account managers, no outsourcing, no agency markup.</p>
-    <a class="btn btn-outline" href="#contact">Talk to Todd</a>
-  </div>
+<section>
+  <h2>Two real findings from building this very store</h2>
+  <p>A live Stripe secret turned up hard-coded in an old helper script in the seller's own repo. <code>lint_secrets.py</code> now runs pre-commit so it can't happen again — and <code>lint_directives.py</code> caught the kit's own CLAUDE.md pointing at a directive that didn't exist:</p>
+  <pre>$ py executions/lint_secrets.py
+ERROR executions/create_links.py:3: stripe live secret
+lint_secrets: FAIL (1 findings)
+
+$ py executions/lint_directives.py
+ERROR CLAUDE.md: references directives/scrape_website.md which does not exist
+lint_directives: FAIL (7 directives, 1 errors)</pre>
+  <p class="tiny">(Both fixed before release. The kit follows its own rules: every tool has a test, and the kit itself must pass its linters.)</p>
 </section>
 
-<section id="contact">
-  <div class="container">
-    <p class="kicker">Contact</p>
-    <h2>Get your free automation audit</h2>
-    <p class="lead">Tell me a little about your business and the most annoying repetitive task in it. I'll reply within one business day with honest advice — even if the answer is "you don't need AI for that."</p>
-    <form action="contact.php" method="POST">
-      <label for="name">Name</label>
-      <input id="name" name="name" required maxlength="100" autocomplete="name">
-      <label for="email">Email</label>
-      <input id="email" name="email" type="email" required maxlength="150" autocomplete="email">
-      <label for="business">What does your business do?</label>
-      <input id="business" name="business" maxlength="200" placeholder="e.g., HVAC company, law office, online store">
-      <label for="message">What task would you love to never do again?</label>
-      <textarea id="message" name="message" rows="4" required maxlength="2000"></textarea>
-      <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
-      <p style="margin-top:22px"><button class="btn" type="submit">Request Free Audit</button></p>
-      <p class="note">Prefer email? Write to <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
-    </form>
-  </div>
+<section>
+  <h2>Who it's for</h2>
+  <table>
+    <tr><th>You</th><th>What changes</th></tr>
+    <tr><td>Solo dev / founder shipping with Claude Code or Cursor</td><td>The agent reads an SOP before acting and stops re-learning your gotchas every session.</td></tr>
+    <tr><td>Small team adopting agents</td><td>Shared directives are your team's operating manual; new people (and new agents) onboard from the same files.</td></tr>
+    <tr><td>Running several agents</td><td>Work authorization, one-agent-per-capability, deploy approval gate, meta-work cap — rules that each cost a real incident to learn.</td></tr>
+  </table>
 </section>
 
-<footer>
-  <div class="container">
-    <div>© 2026 Calyx AI · calyx-ai.net</div>
-    <div><a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></div>
+<section>
+  <h2>FAQ</h2>
+  <details><summary>Does it only work with Claude Code?</summary><p>No. CLAUDE.md is the canonical file; Cursor users paste it into <code>.cursorrules</code>, Codex and Gemini CLI users into <code>AGENTS.md</code> / <code>GEMINI.md</code>. The directives and scripts are tool-agnostic (plain Markdown + Python 3.10+).</p></details>
+  <details><summary>Is there a free version?</summary><p>Yes — a lite version (CLAUDE.md + one core directive + the secrets linter) is on <a href="https://github.com/skibuff22/agent-ops-kit-lite">GitHub</a>. The paid kit adds the other directives, all scripts and tests, the skills, the agent templates and the guides.</p></details>
+  <details><summary>How is it delivered?</summary><p>Instantly: a download page right after checkout plus the same link by email (valid 30 days). Updates are emailed to every buyer free.</p></details>
+  <details><summary>Refunds?</summary><p>14 days, no questions — reply to your receipt email.</p></details>
+  <details><summary>Who made this?</summary><p>Calyx AI is a product line of Quality Tester Solutions LLC (St. Petersburg, FL), a small engineering company that builds test equipment and runs its own CRM, invoicing and inventory platform with a fleet of AI agents using exactly this framework.</p></details>
+</section>
+
+<section>
+  <div class="buy">
+    <h2>Agent Ops Kit v1</h2>
+    <div class="price">$29 <small>one-time</small></div>
+    <p class="tiny">Instant download · free updates · 14-day refund · license for unlimited projects you own or work on</p>
+    <a class="btn" href="https://api.qualitytester.us/store/checkout.php?sku=AOK-1">Buy now</a>
   </div>
-</footer>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · Calyx AI · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+  <p>Payments processed by Stripe. Your statement will show Quality Tester Solutions LLC.</p>
+</div></footer>
 </body>
 </html>
