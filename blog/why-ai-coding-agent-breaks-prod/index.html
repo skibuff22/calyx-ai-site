@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Your AI Coding Agent Keeps Breaking Prod (and the 3-Layer Fix) | Calyx AI</title>
+<meta name="description" content="Why Claude Code, Cursor and Codex agents fail on multi-step production work, the compounding math behind it, and the Directive/Orchestration/Execution fix.">
+<link rel="canonical" href="https://calyx-ai.net/blog/why-ai-coding-agent-breaks-prod/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Why your AI coding agent keeps breaking prod (and the 3-layer fix)">
+<meta property="og:description" content="90% per step is 59% over five steps. How to move the deterministic work out of the model and make every failure make the system stronger.">
+<meta property="og:url" content="https://calyx-ai.net/blog/why-ai-coding-agent-breaks-prod/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Why your AI coding agent keeps breaking prod (and the 3-layer fix)","description":"Why Claude Code, Cursor and Codex agents fail on multi-step production work, the compounding math behind it, and the Directive/Orchestration/Execution fix.","datePublished":"2026-10-16","dateModified":"2026-10-16","mainEntityOfPage":"https://calyx-ai.net/blog/why-ai-coding-agent-breaks-prod/","author":{"@type":"Organization","name":"Calyx AI","url":"https://calyx-ai.net/"},"publisher":{"@type":"Organization","name":"Quality Tester Solutions LLC","url":"https://calyx-ai.net/"},"keywords":"AI coding agent, Claude Code, Cursor, CLAUDE.md, agent reliability, D.O.E. framework"}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+pre{background:#0b0d11;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#d7dae0;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:720px;margin:0 auto;padding:40px 0 24px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+.math{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin:18px 0}
+.math div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.math b{display:block;font-family:"Barlow Semi Condensed";font-size:1.8rem;color:var(--accent-2)}
+table{width:100%;border-collapse:collapse;font-size:.97rem}td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:500}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media (max-width:820px){.math{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Calyx<span>AI</span></a>
+  <nav><a class="btn small" href="https://calyx-ai.net/">Agent Ops Kit</a></nav>
+</div></header>
+
+<main class="wrap">
+<article>
+<p class="meta">Calyx AI · October 16, 2026 · 7 min read</p>
+<h1>Why your AI coding agent keeps breaking prod (and the 3-layer fix)</h1>
+<p class="lead">Claude Code, Cursor and Codex are excellent at single steps. Production work is not a single step. Here is the arithmetic of why agents fall apart on real tasks, and the structure we use to run a small company's platform with agents without babysitting them.</p>
+
+<h2>The symptom: brilliant in the demo, flaky on Tuesday</h2>
+<p>You ask the agent to deploy a fix. It edits the right file, writes a plausible commit message, runs the deploy, and then something small goes wrong: a CRLF line ending breaks a shell script on the server, an environment variable is read from the wrong file, a webhook key rotates on redeploy. The agent notices the failure, "fixes" it by retrying or resetting state, and reports success. Next week, in a fresh session, it does exactly the same thing.</p>
+<p>None of this is the model being dumb. It is the shape of the work.</p>
+
+<h2>The arithmetic: errors compound</h2>
+<p>Suppose your agent gets each step right 90&nbsp;% of the time, which is generous for a step like "parse this API response and write the right rows". Chain steps together and the probabilities multiply:</p>
+<div class="math"><div><b>0.9⁵ = 59%</b>five steps</div><div><b>0.9¹⁰ = 35%</b>ten steps</div><div><b>0.9³ = 73%</b>three decisions, scripts do the rest</div></div>
+<p>Real tasks (fetch, parse, transform, validate, write, deploy, verify) are ten to fifty steps. If the model <em>executes</em> every one of them by improvising code or commands in the moment, the success rate of the whole job collapses, and you end up watching it.</p>
+<p>The fix is not a better prompt. It is moving the steps that have a right answer out of the model entirely.</p>
+
+<h2>The 3-layer fix: Directive, Orchestration, Execution</h2>
+<p>We call it D.O.E. Each layer does one kind of work, and the boundaries between them are the point.</p>
+<table>
+  <tr><th>Layer</th><th>Nature</th><th>Lives in</th><th>Changed by</th></tr>
+  <tr><td><strong>Directive</strong></td><td>Intent, in prose: goal, inputs, tools, outputs, edge cases, how to verify</td><td><code>directives/*.md</code></td><td>Humans write; agents append learnings</td></tr>
+  <tr><td><strong>Orchestration</strong></td><td>Judgment: which directive applies, which inputs, did it work</td><td>The agent; <code>CLAUDE.md</code> is its job description</td><td>You, rarely</td></tr>
+  <tr><td><strong>Execution</strong></td><td>Determinism: fetch, parse, transform, deploy</td><td><code>executions/*.py</code></td><td>Agents write; tests guard</td></tr>
+</table>
+<p>A directive never contains code. A script never contains policy ("ask the user if…"). The agent never contains either: it reads one and runs the other. Now the model makes three decisions instead of fifty executions, and decisions are the part a model is actually good at. A script that parses a response correctly once parses it correctly forever.</p>
+
+<h3>What a directive looks like</h3>
+<pre># Directive: Deploy the API
+
+## Goal
+Ship the current branch to the API server and prove it's live.
+
+## Execution tools
+executions/deploy_service.py --target api   # normalizes CRLF/BOM, uploads, restarts
+
+## Edge cases &amp; learnings
+- Shell scripts committed from Windows had CRLF endings and
+  failed with "bad interpreter". deploy_service.py now normalizes them.
+- The webhook key rotates on redeploy; the script refreshes it.
+
+## Verification
+GET /health returns 200 and the commit hash matches HEAD.</pre>
+<p>The <em>Edge cases &amp; learnings</em> section is where the return on investment lives. Every gotcha the agent meets is written down where the next session reads it <em>before</em> acting, instead of being rediscovered at 2&nbsp;a.m.</p>
+
+<h2>The part that makes it get better: self-annealing</h2>
+<p>Structure alone stops the bleeding. What makes month three dramatically better than week one is a rule about failure: <strong>recovery is not a fix</strong>. When something breaks, the agent runs a fixed loop, in this order:</p>
+<ol>
+  <li><strong>Diagnose the root cause</strong>: keep asking "why" until you reach something that, once fixed, prevents recurrence.</li>
+  <li><strong>Fix it</strong> in code, config or infrastructure.</li>
+  <li><strong>Add the test</strong> that would have caught it.</li>
+  <li><strong>Add a standard</strong> to the directive (and a lint, if the pattern is mechanically detectable).</li>
+  <li><strong>Then recover</strong>: reprocess the stuck items, restart the service.</li>
+</ol>
+<p>Most agent sessions do step 5 first and stop. "Let's just reprocess the stuck items" and "I'll add a cron to retry failures" feel like progress and leave the cause in place. Making recovery the <em>last</em> step means every failure leaves behind a test, a rule and sometimes a lint, so whole classes of mistakes stop being possible.</p>
+
+<h3>A real example from building our own store</h3>
+<p>While building the checkout for this site, a secrets linter found a live Stripe key hard-coded in an old helper script in our own repo. Removing that one key would have been recovery. The fix was making <code>lint_secrets.py</code> run before every commit and adding a line to <code>CLAUDE.md</code> requiring it. That kind of mistake can no longer reach git in that repo, whoever (or whatever) is typing.</p>
+
+<h2>How to start today, for free</h2>
+<ol>
+  <li>Put a <code>CLAUDE.md</code> (or <code>.cursorrules</code> / <code>AGENTS.md</code>) at your repo root that states the three layers and the self-annealing loop.</li>
+  <li>Pick the one job your agent fails at most often. Write a directive for it with the six sections above, and point it at a script.</li>
+  <li>Move the deterministic parts of that job into the script. Give the script a test.</li>
+  <li>Tell the agent: <em>"Read CLAUDE.md, then run the deploy directive."</em> Watch what it appends to <em>Edge cases &amp; learnings</em>.</li>
+</ol>
+<p>We publish a free starter, <a href="https://github.com/skibuff22/agent-ops-kit-lite">Agent Ops Kit Lite on GitHub</a> (MIT), with the <code>CLAUDE.md</code>, the operating-principles directive, the directive template and the secrets linter. It is enough to try the approach on one job this afternoon.</p>
+
+<div class="buy">
+  <h2>Want the whole system?</h2>
+  <p>The <strong>Agent Ops Kit</strong> adds the self-annealing, bug-fix and agent-governance directives, three complete example directives, seven tested execution scripts (QA/SEO crawler, SSH deploy, directive linter, anneal log and more), Claude Code skills, and multi-agent templates. $29 one-time, instant download, 14-day refund.</p>
+  <div class="cta-row">
+    <a class="btn" href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=why-agents-break-prod">See the Agent Ops Kit</a>
+    <a class="btn ghost" href="https://github.com/skibuff22/agent-ops-kit-lite">Get the free lite kit</a>
+  </div>
+</div>
+<p class="tiny">Written by Calyx AI, a product line of Quality Tester Solutions LLC. This article was drafted with AI assistance and reviewed against the framework we run in production.</p>
+</article>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · Calyx AI · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+</body>
+</html>
