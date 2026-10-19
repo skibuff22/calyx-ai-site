@@ -186,5 +186,12 @@ lint_directives: FAIL (7 directives, 1 errors)</pre>
   <p>Payments processed by Stripe. Your statement will show Quality Tester Solutions LLC.</p>
   <p>Read: <a href="blog/why-ai-coding-agent-breaks-prod/">Why your AI coding agent keeps breaking prod (and the 3-layer fix)</a></p>
 </div></footer>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
 </body>
 </html>
