@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Product","name":"Agent Ops Kit v1","description":"The D.O.E. framework for reliable AI coding agents: CLAUDE.md, directives, execution scripts, linters, self-annealing loop, multi-agent templates.","brand":{"@type":"Brand","name":"Calyx AI"},"offers":{"@type":"Offer","price":"29.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://api.qualitytester.us/store/checkout.php?sku=AOK-1"}}
+{"@context":"https://schema.org","@type":"Product","name":"Agent Ops Kit v1","description":"The D.O.E. framework for reliable AI coding agents: CLAUDE.md, directives, execution scripts, linters, self-annealing loop, multi-agent templates.","brand":{"@type":"Brand","name":"Calyx AI"},"offers":{"@type":"Offer","price":"19.00","priceValidUntil":"2026-11-02","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://api.qualitytester.us/store/checkout.php?sku=AOK-1"}}
 </script>
 <style>
 :root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
@@ -57,7 +57,7 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 <body>
 <header><div class="wrap nav">
   <a class="brand" href="./">Calyx<span>AI</span></a>
-  <nav><a class="btn small" href="https://api.qualitytester.us/store/checkout.php?sku=AOK-1">Buy — $29</a></nav>
+  <nav><a class="btn small" href="https://api.qualitytester.us/store/checkout.php?sku=AOK-1">Buy — <span class="aok-price">$19</span></a></nav>
 </div></header>
 
 <main class="wrap">
@@ -65,7 +65,7 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
   <div>
     <h1>Stop babysitting your AI coding agent.</h1>
     <p class="lead">The <strong>Agent Ops Kit</strong> is the D.O.E. framework — Directive / Orchestration / Execution — that turns Claude Code, Cursor or Codex from a clever intern into a reliable operator: it reads an SOP, runs a deterministic script, and writes what it learned back into the SOP.</p>
-    <div class="price">$29 <small>one-time · instant download · free updates · 14-day refund</small></div>
+    <div class="price"><span class="aok-price">$19</span> <small><span class="aok-launch">launch price through Nov 2, 2026 (regular $29) · </span>one-time · instant download · free updates · 14-day refund</small></div>
     <div class="cta-row">
       <a class="btn" href="https://api.qualitytester.us/store/checkout.php?sku=AOK-1">Get the kit</a>
       <a class="btn ghost" href="#inside">See what's inside</a>
@@ -174,7 +174,7 @@ lint_directives: FAIL (7 directives, 1 errors)</pre>
 <section>
   <div class="buy">
     <h2>Agent Ops Kit v1</h2>
-    <div class="price">$29 <small>one-time</small></div>
+    <div class="price"><span class="aok-price">$19</span> <small>one-time<span class="aok-launch"> · launch price through Nov 2, 2026, then $29</span></small></div>
     <p class="tiny">Instant download · free updates · 14-day refund · license for unlimited projects you own or work on</p>
     <a class="btn" href="https://api.qualitytester.us/store/checkout.php?sku=AOK-1">Buy now</a>
   </div>
@@ -186,7 +186,9 @@ lint_directives: FAIL (7 directives, 1 errors)</pre>
   <p>Payments processed by Stripe. Your statement will show Quality Tester Solutions LLC.</p>
   <p>Read: <a href="blog/why-ai-coding-agent-breaks-prod/">Why your AI coding agent keeps breaking prod (and the 3-layer fix)</a></p>
 </div></footer>
-<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+<script>/* E7: launch price ends 2026-11-03 00:00 UTC, same instant as store/catalog.php */
+if(Date.now()>=Date.parse("2026-11-03T00:00:00Z")){document.querySelectorAll(".aok-price").forEach(function(e){e.textContent="$29";});document.querySelectorAll(".aok-launch").forEach(function(e){e.remove();});}
+/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
 (function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
 try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
 new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
