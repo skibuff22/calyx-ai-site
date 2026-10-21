@@ -56,10 +56,10 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 <article>
 <p class="meta">Calyx AI · October 21, 2026 · 6 min read</p>
 <h1>The self-annealing loop: make every AI agent failure leave a test behind</h1>
-<p class="lead">An AI coding agent that hits an error will almost always try to get past it: retry, reset, reprocess. That makes today's run green and guarantees the same failure next week. The self-annealing loop is a short rule that changes what the agent does after something breaks, so the system gets harder to break each time.</p>
+<p class="lead">When an AI coding agent hits an error, the easiest move is to get past it: retry, reset, reprocess. That makes today's run green and guarantees the same failure next week. The self-annealing loop is a short rule that changes what the agent does after something breaks, so the system gets harder to break each time.</p>
 
 <h2>Why agents default to recovery</h2>
-<p>Ask Claude Code, Cursor or Codex to finish a job and you have told it, implicitly, that a finished job is the goal. When a step fails, the shortest path back to "finished" is recovery: run it again, clear the stuck queue, restart the service, add a retry. Each of those is reasonable in isolation. Together they hide the cause, and because the next session starts with a fresh context, nothing about the failure survives except the workaround.</p>
+<p>Ask a coding agent to finish a job and you have told it, implicitly, that a finished job is the goal. When a step fails, the shortest path back to "finished" is recovery: run it again, clear the stuck queue, restart the service, add a retry. Each of those is reasonable in isolation. Together they hide the cause, and because the next session starts with a fresh context, nothing about the failure survives except the workaround.</p>
 <p>A human engineer does the same thing under pressure. The difference is that the human usually remembers. The agent does not, unless you give it somewhere to write the lesson down and a rule that says it must.</p>
 
 <h2>The loop, in order</h2>
@@ -71,10 +71,10 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
   <li><strong>Write the standard down.</strong> Add a line to the directive's <em>Edge cases &amp; learnings</em> section, and a lint if the pattern can be detected mechanically.</li>
   <li><strong>Then recover:</strong> reprocess the stuck items, restart, re-run.</li>
 </ol>
-<p>Recovery still happens. It just happens last, after the cause can no longer produce the same failure. If the agent cannot finish steps 1 to 4 in the session, it says so and leaves the item open instead of quietly recovering.</p>
+<p>Recovery still happens. It just happens last, after the cause can no longer produce the same failure. A rule worth adding: if the agent cannot finish steps 1 to 4 in the session, it says so and leaves the item open instead of quietly recovering.</p>
 
 <h3>Put it where the agent reads it first</h3>
-<p>The loop only works if it is part of the agent's standing instructions, not a prompt you remember to type. In a D.O.E. repo (Directive, Orchestration, Execution, described in <a href="../why-ai-coding-agent-breaks-prod/">the first article</a>) it lives in <code>CLAUDE.md</code>:</p>
+<p>The loop only works if it is part of the agent's standing instructions, not a prompt you remember to type. In a D.O.E. repo (Directive, Orchestration, Execution, described in <a href="../why-ai-coding-agent-breaks-prod/">the first article</a>) it lives in <code>CLAUDE.md</code>. A condensed example:</p>
 <pre>## When something fails (self-annealing)
 1. Diagnose the root cause. A symptom is not a cause.
 2. Fix it in code/config/infra.
@@ -85,15 +85,15 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 Record each pass in the anneal log: date, symptom, cause, fix, test.</pre>
 <p>The anneal log matters more than it looks. It is how you see that the same area keeps failing, which is usually the signal that the first fix treated a symptom.</p>
 
-<h2>A real example: three false alarms in four days</h2>
-<p>We run the store behind this site with a daily agent job on a small Linux box. Each morning a script checks the storefront and the checkout endpoint, and if either returns nothing (HTTP status <code>000</code>), it raises an ATTENTION note that tells the agent to treat it as an outage.</p>
+<h2>A real example: three anneal passes in four days</h2>
+<p>We run the store behind this site with a daily agent job on a small Linux box. Each day a script checks the storefront and the checkout endpoint, and if either returns nothing (HTTP status <code>000</code>), it raises an ATTENTION note: the agent must diagnose and fix the cause before doing anything else.</p>
 <table>
   <tr><th>Pass</th><th>What happened</th><th>Root cause found</th><th>What it left behind</th></tr>
-  <tr><td>1</td><td>ATTENTION: storefront unreachable</td><td>The box had lost its own uplink (gateway and DNS failing). The store was fine.</td><td>A "host offline" check before raising ATTENTION, curl timeouts and retries, and a fix for a <code>git pull</code> that always failed on a dirty log file</td></tr>
-  <tr><td>2</td><td>Metrics job failed with a name-resolution error</td><td>Flaky DNS on the same box</td><td>Retries with backoff on transport errors only, so a real API error still fails loudly</td></tr>
+  <tr><td>1</td><td>ATTENTION: storefront unreachable</td><td>The box had lost its own uplink (gateway and DNS failing). The store was fine.</td><td>A "host offline" check before raising ATTENTION, curl timeouts and retries, and a fix for a <code>git pull</code> that failed on a dirty log file</td></tr>
+  <tr><td>2</td><td>Metrics job failed with a name-resolution error</td><td>Flaky DNS on the same box</td><td>Retries with backoff on transport errors only</td></tr>
   <tr><td>3</td><td>ATTENTION again, storefront unreachable</td><td>LAN clean, but the WAN was dropping most packets. The single offline probe happened to succeed, so the pass-1 check did not fire.</td><td>Six probes instead of one; two or more failures is classified as "host network degraded", not a store outage. A standard in the directive, and a note that this is a hardware problem for a human</td></tr>
 </table>
-<p>Pass 1 was a real fix and still not the whole answer, which is normal. What the loop guaranteed is that pass 3 started from the log of passes 1 and 2 instead of from zero, and that the agent never "fixed" the alarm by restarting a store that was not broken. Recovering first would have meant redeploying a healthy site three times.</p>
+<p>Pass 1 was a real fix and still not the whole answer, which is normal. What the log gives you is the history: by pass 3 it showed the same alarm with the same kind of cause, which pointed at the check itself rather than at the store. Recovering first would have meant treating a healthy site as broken.</p>
 <p>The last row also shows the loop's honest exit: some root causes are not code. When the cause is a flaky network link, the right standard is "classify it correctly and tell a human", not another retry.</p>
 
 <h2>What to check before you call a pass done</h2>
@@ -105,12 +105,12 @@ Record each pass in the anneal log: date, symptom, cause, fix, test.</pre>
 </ul>
 
 <h2>Start with one directive</h2>
-<p>You do not need a framework to try this. Add the five-step block above to your <code>CLAUDE.md</code>, <code>.cursorrules</code> or <code>AGENTS.md</code>, and give your most failure-prone job a directive with an <em>Edge cases &amp; learnings</em> section. After a week, read that section. It is a list of things that can no longer go wrong the same way.</p>
+<p>You do not need a framework to try this. Add the five-step block above to your <code>CLAUDE.md</code>, <code>.cursorrules</code> or <code>AGENTS.md</code>, and give your most failure-prone job a directive with an <em>Edge cases &amp; learnings</em> section. After a week, read that section. It is a list of failures that now have a test, a rule or a lint against them.</p>
 <p>The free <a href="https://github.com/skibuff22/agent-ops-kit-lite">Agent Ops Kit Lite</a> (MIT) has the <code>CLAUDE.md</code> with this loop, the directive template and a secrets linter. It also installs as a Claude Code plugin: <code>/plugin marketplace add skibuff22/agent-ops-kit-lite</code>.</p>
 
 <div class="buy">
   <h2>Want the whole system?</h2>
-  <p>The <strong>Agent Ops Kit</strong> adds the full self-annealing, bug-fix and agent-governance directives, three complete example directives, seven tested execution scripts (QA/SEO crawler, SSH deploy, directive linter, anneal log and more), Claude Code skills, and multi-agent templates. $19 launch price through November 2, 2026 (then $29), one-time, instant download, 14-day refund.</p>
+  <p>The <strong>Agent Ops Kit</strong> adds the full self-annealing, bug-fix and agent-governance directives, three complete example directives, seven execution scripts (QA/SEO crawler, SSH deploy, directive linter, anneal log and more), Claude Code skills, and multi-agent templates. $19 launch price through November 2, 2026 (then $29), one-time, instant download, 14-day refund.</p>
   <div class="cta-row">
     <a class="btn" href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=self-annealing-loop">See the Agent Ops Kit</a>
     <a class="btn ghost" href="https://github.com/skibuff22/agent-ops-kit-lite">Get the free lite kit</a>
