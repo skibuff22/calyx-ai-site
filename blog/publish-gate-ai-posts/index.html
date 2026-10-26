@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Publish Gate for AI-Assisted Posts | Calyx AI</title>
+<meta name="description" content="How we stop an AI agent from posting made-up numbers or stock phrases: a facts file, deterministic checks, an LLM claim check that fails closed, a hash lock.">
+<link rel="canonical" href="https://calyx-ai.net/blog/publish-gate-ai-posts/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A publish gate for AI-assisted posts: check every claim before it goes out">
+<meta property="og:description" content="How we stop an AI agent from posting made-up numbers or stock phrases: a facts file, deterministic checks, an LLM claim check that fails closed, a hash lock.">
+<meta property="og:url" content="https://calyx-ai.net/blog/publish-gate-ai-posts/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "A publish gate for AI-assisted posts: check every claim before it goes out", "description": "How we stop an AI agent from posting made-up numbers or stock phrases: a facts file, deterministic checks, an LLM claim check that fails closed, a hash lock.", "datePublished": "2026-10-26", "dateModified": "2026-10-26", "mainEntityOfPage": "https://calyx-ai.net/blog/publish-gate-ai-posts/", "author": {"@type": "Organization", "name": "Calyx AI"}, "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+pre{background:#0b0d11;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#d7dae0;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:720px;margin:0 auto;padding:40px 0 24px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+.math{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin:18px 0}
+.math div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.math b{display:block;font-family:"Barlow Semi Condensed";font-size:1.8rem;color:var(--accent-2)}
+table{width:100%;border-collapse:collapse;font-size:.97rem}td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:500}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media (max-width:820px){.math{grid-template-columns:1fr}}
+</style>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Calyx<span>AI</span></a>
+  <nav><a class="btn small" href="https://calyx-ai.net/#publish-gate">Publish Gate</a></nav>
+</div></header>
+
+<main class="wrap">
+<article>
+<p class="meta">Calyx AI · October 26, 2026 · 6 min read</p>
+<h1>A publish gate for AI-assisted posts: check every claim before it goes out</h1>
+<p class="lead">If an AI agent drafts what you publish, the risk is not bad grammar. It is a confident number nobody measured, a feature that does not exist, or a paragraph of stock phrases with your name on it. We let our store's daily agent post under a real person's name, so we built a gate it cannot skip.</p>
+
+<h2>What goes wrong without one</h2>
+<p>A language model writes what is plausible. Plausible is fine for a first draft and wrong for a public claim. The failures we wrote the gate against are ordinary ones: a round number that sounds right ("cuts review time in half"), a feature described the way it will work next month, a link to a checkout page with no tracking, and the familiar vocabulary that tells a reader nobody read the draft.</p>
+<p>Asking the agent to "be accurate" does not fix this. The agent that wrote the claim is the one judging it, in the same context, with the same blind spots. The check has to sit outside the writing step and it has to be able to say no.</p>
+
+<h2>The gate, in three layers</h2>
+<h3>A facts file is the only source of truth</h3>
+<p>Every claim and every number a post may use lives in <code>facts.md</code>, each with its evidence: a file path, a command and its output, or a URL. If it is not in the file, it is not claimable. The file also has a "not claimable" section: customer counts, benchmarks, anything nobody has measured. Writing that section down is what keeps later posts honest.</p>
+
+<h3>Deterministic checks are the floor</h3>
+<ul>
+  <li><strong>Numbers:</strong> every number in the body must appear in <code>facts.md</code>, or the line carries a <code>[src: URL]</code>. Years, times, versions and list numbering are exempt.</li>
+  <li><strong>Phrases:</strong> a built-in list of stock AI phrases plus your own "Banned phrases" list from <code>voice.md</code>.</li>
+  <li><strong>Structure:</strong> no emoji, at most one exclamation mark, no rhetorical-question openers, a cap on em-dash density.</li>
+  <li><strong>Links:</strong> every link must resolve, and checkout links must carry <code>utm_source</code> so you can see which post sent the buyer.</li>
+</ul>
+<p>These cost nothing to run and they never get tired. They catch the cheap mistakes before a model is involved.</p>
+
+<h3>An LLM checks each claim, and fails closed</h3>
+<p>The last check sends the draft and the facts file to a model and asks for a verdict per claim: SUPPORTED, UNSUPPORTED or CONTRADICTED. Anything other than SUPPORTED fails the post. If the model cannot be reached, the gate fails too. A check that passes when it cannot run is not a check.</p>
+<p>A PASS writes a small sidecar file with the SHA-256 of the post body. Every publisher script calls one function before it posts:</p>
+<pre>side = require_verified(path, body)   # refuses if the sidecar is missing,
+                                      # the hash differs, or the LLM step was skipped</pre>
+<p>Edit one word after the PASS and the publisher refuses until the gate runs again. That rule stops an agent from tweaking a post after it passed. It does not stop an agent with write access from changing the publisher itself; that part is still code review.</p>
+
+<h2>What it caught, and what it did not</h2>
+<p>The gate checks content. Today it showed us the edge of that. Our Show HN post passed the gate, the publisher submitted it and printed PUBLISHED, and the account's submissions page was empty. Hacker News had answered with a notice that it is temporarily restricting Show HNs from new accounts. The publisher had trusted the redirect after submitting and, when it could not find the item, reported a generic URL as success.</p>
+<p>That is a publisher bug, not a content problem, and we handled it the way we handle any failure: find the cause, fix it, add the test, then recover. The publisher now reports success only when the item appears under the account's own submissions, saves HN's response page otherwise, and reports the restriction as declined. We did not retitle the post to get around the rule; the draft is parked and the rule is logged. A gate tells you a post matches your facts file and your voice guide. It cannot tell you a community will take it, and your publishers need their own proof that the post actually exists.</p>
+
+<h2>Try the pattern without buying anything</h2>
+<p>Start with the cheapest part: a <code>facts.md</code> with evidence per line and a "not claimable" section, plus a rule in your <code>CLAUDE.md</code> or <code>AGENTS.md</code> that nothing is published unless every number in it is in that file. Then add the hash lock: write the body's hash on approval and refuse to publish if it changed. Those two steps are the core of the pattern.</p>
+<p>The free <a href="https://github.com/skibuff22/agent-ops-kit-lite">Agent Ops Kit Lite</a> (MIT) has the <code>CLAUDE.md</code> structure this runs inside.</p>
+
+<div class="buy">
+  <h2>Want the finished gate?</h2>
+  <p><strong>Publish Gate v1</strong> is the tested version: <code>verify_post.py</code> with configurable facts and voice files, any model CLI through <code>PUBLISH_GATE_LLM</code> (default <code>claude -p</code>), the <code>require_verified</code> helper, an example dev.to publisher, templates, a directive for your agent and 8 tests. $19 one-time, or $29 bundled with the Agent Ops Kit. Instant download, 14-day refund.</p>
+  <div class="cta-row">
+    <a class="btn" href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=publish-gate#publish-gate">See Publish Gate</a>
+    <a class="btn ghost" href="https://github.com/skibuff22/agent-ops-kit-lite">Get the free lite kit</a>
+  </div>
+</div>
+<p class="tiny">Written by Calyx AI, a product line of Quality Tester Solutions LLC. This article was drafted with AI assistance and passed the gate it describes; the Hacker News incident is from our own run log.</p>
+</article>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · Calyx AI · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
