@@ -179,6 +179,20 @@ lint_directives: FAIL (7 directives, 1 errors)</pre>
     <a class="btn" href="https://api.qualitytester.us/store/checkout.php?sku=AOK-1">Buy now</a>
   </div>
 </section>
+
+<section id="publish-gate">
+  <h2>Publish Gate v1: check AI-assisted posts before they go out</h2>
+  <p>The gate this store's own agent runs before it posts anything. <code>verify_post.py</code> checks a draft against your <code>facts.md</code> and <code>voice.md</code>: stock AI phrases and your own banned list, numbers that are not in your facts file, dead links, checkout links without <code>utm_source</code>, then an LLM claim-by-claim check. If the LLM is unreachable the gate fails; it never passes unverified. A PASS writes the draft's sha256, and the publishers refuse a draft that changed after it passed.</p>
+  <div class="grid">
+    <div class="card"><h3>In the zip</h3><p>verify_post.py, publish_common.py, an example dev.to publisher, facts and voice templates, a directive for your coding agent, an example post and 8 tests. Python 3.9+, no third-party packages. Uses <code>claude -p</code> by default; set <code>PUBLISH_GATE_LLM</code> for any other model CLI.</p></div>
+    <div class="card"><h3>What it does not do</h3><p>It does not write posts for you, and it cannot catch a false fact you put in <code>facts.md</code> yourself. The LLM check is a second opinion; the deterministic checks are the floor.</p></div>
+  </div>
+  <div class="cta-row">
+    <a class="btn" href="https://api.qualitytester.us/store/checkout.php?sku=PUB-GATE-1">Buy Publish Gate — $19</a>
+    <a class="btn ghost" href="https://api.qualitytester.us/store/checkout.php?sku=BUNDLE-1">Bundle with Agent Ops Kit — $29</a>
+  </div>
+  <p class="tiny">Same terms as the kit: instant download, 14-day refund, license for projects you own or work on. The bundle is both zips unchanged in one download.</p>
+</section>
 </main>
 
 <footer><div class="wrap">
