@@ -71,6 +71,7 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
       <a class="btn ghost" href="#inside">See what's inside</a>
     </div>
     <p class="tiny">Secure checkout by Stripe. Works with Claude Code (CLAUDE.md + skills), Cursor (.cursorrules), Codex / Gemini CLI (AGENTS.md).</p>
+    <p class="tiny"><strong>Try the free version first</strong> (Claude Code plugin, MIT): <code>/plugin marketplace add skibuff22/agent-ops-kit-lite</code> then <code>/plugin install agent-ops-kit-lite@calyx-ai</code>. It scaffolds CLAUDE.md, a directive and the secrets linter, and adds <code>/verify-claims</code> for drafts. <a href="https://github.com/skibuff22/agent-ops-kit-lite">Source on GitHub</a>.</p>
   </div>
   <pre aria-label="CLAUDE.md excerpt"># CLAUDE.md (excerpt)
 
@@ -87,6 +88,15 @@ Layer 3 — Execution: scripts in executions/
 Mandatory checks before touching:
 | Deploys   | directives/deploy_service.md |
 | Bug fixes | directives/core/bug-fix-standard.md |</pre>
+</section>
+
+<section>
+  <h2>What it stops</h2>
+  <ul>
+    <li><strong>Secrets in git.</strong> <code>lint_secrets.py</code> runs before a commit and fails on hard-coded Stripe, GitHub, AWS, Slack, OpenAI and Anthropic keys and private keys. It found a live Stripe secret in this store's own repo (below).</li>
+    <li><strong>Instructions that point nowhere.</strong> <code>lint_directives.py</code> fails when CLAUDE.md or a directive references a file or script that does not exist. It caught the kit's own CLAUDE.md doing that before release.</li>
+    <li><strong>"Fixes" that only hide the failure.</strong> The bug-fix standard makes the agent name the root cause and add a test that fails before the fix (plus a written rule when it is a pattern); the operating principles treat a retry, reset or reprocess as recovery, never as the fix.</li>
+  </ul>
 </section>
 
 <section>
@@ -165,7 +175,8 @@ lint_directives: FAIL (7 directives, 1 errors)</pre>
 <section>
   <h2>FAQ</h2>
   <details><summary>Does it only work with Claude Code?</summary><p>No. CLAUDE.md is the canonical file; Cursor users paste it into <code>.cursorrules</code>, Codex and Gemini CLI users into <code>AGENTS.md</code> / <code>GEMINI.md</code>. The directives and scripts are tool-agnostic (plain Markdown + Python 3.10+).</p></details>
-  <details><summary>Is there a free version?</summary><p>Yes — a lite version (CLAUDE.md + one core directive + the secrets linter) is on <a href="https://github.com/skibuff22/agent-ops-kit-lite">GitHub</a>. The paid kit adds the other directives, all scripts and tests, the skills, the agent templates and the guides.</p></details>
+  <details><summary>Is there a free version?</summary><p>Yes — a lite version (CLAUDE.md + one core directive + the secrets linter, plus the <code>/verify-claims</code> skill) is on <a href="https://github.com/skibuff22/agent-ops-kit-lite">GitHub</a>, installable as a Claude Code plugin. The paid kit adds the other directives, all scripts and tests, the skills, the agent templates and the guides.</p></details>
+  <details><summary>Why not just write my own CLAUDE.md?</summary><p>You can, and the free plugin gives you ours to start from. A CLAUDE.md is only advice; the agent can ignore it. The paid kit is the part that checks: linters (with tests) that exit with an error, directives written after real incidents on a running business platform, and the loop that turns each failure into a test and a rule. If the free version is enough for you, keep using it.</p></details>
   <details><summary>How is it delivered?</summary><p>Instantly: a download page right after checkout plus the same link by email (valid 30 days). Updates are emailed to every buyer free.</p></details>
   <details><summary>Refunds?</summary><p>14 days, no questions — reply to your receipt email.</p></details>
   <details><summary>Who made this?</summary><p>Calyx AI is a product line of Quality Tester Solutions LLC (St. Petersburg, FL), a small engineering company that builds test equipment and runs its own CRM, invoicing and inventory platform with a fleet of AI agents using exactly this framework.</p></details>
