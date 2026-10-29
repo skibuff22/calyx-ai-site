@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ultimate Pull-Test Load Statistics Calculator (Mean, CoV, k) | QTS</title>
+<meta name="description" content="Paste anchor or fastener ultimate pull-test loads and get n, mean, standard deviation, CoV, min, max and the characteristic value mean - k x s. Free.">
+<link rel="canonical" href="https://calyx-ai.net/qa/ultimate-load-calculator/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ultimate pull-test load statistics calculator">
+<meta property="og:description" content="Mean, sample standard deviation, coefficient of variation and mean - k x s for anchor and fastener tests taken to failure. Free, in your browser.">
+<meta property="og:url" content="https://calyx-ai.net/qa/ultimate-load-calculator/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Ultimate Pull-Test Load Statistics Calculator","url":"https://calyx-ai.net/qa/ultimate-load-calculator/","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Computes n, mean, sample standard deviation, coefficient of variation, minimum, maximum, the characteristic value mean - k x s (k entered by the user) and the minimum-to-design-load ratio for pull tests taken to failure.","publisher":{"@type":"Organization","name":"Quality Tester Solutions LLC","url":"https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:1000px;margin:0 auto;padding:40px 0 24px}
+.prose{max-width:760px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem;font-family:inherit}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{color:var(--muted);font-weight:500}
+input,select{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px 16px}
+.grid label{display:block;font-size:.85rem;color:var(--muted)}
+.sheet{overflow-x:auto}
+.res{font-weight:700;text-align:center}.PASS{color:var(--ok)}.FAIL{color:var(--accent-2)}
+.summary td:first-child{color:var(--muted);width:40%}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.printnote,.printonly{display:none}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media print{
+  @page{size:Letter landscape;margin:10mm}
+  body{background:#fff;color:#000;font-family:Arial,sans-serif;font-size:9.5pt;line-height:1.3}
+  header,footer,.noprint,.buy{display:none!important}
+  article{padding:0;max-width:none}h1{font-size:15pt;margin:0 0 6pt;color:#000}h2{font-size:11pt;margin:8pt 0 4pt;color:#000}
+  input,select{background:#fff;color:#000;border:0;border-bottom:1px solid #777;border-radius:0;padding:1pt 2pt;font-size:9pt;-webkit-appearance:none;appearance:none}
+  table td,table th{border:1px solid #777;padding:2pt 3pt;color:#000}
+  .sheet td input,.sheet td select{border:0}
+  .grid{grid-template-columns:repeat(4,1fr);gap:4pt 10pt}.grid label{color:#000;font-size:8pt}
+  .PASS,.FAIL,.summary td:first-child{color:#000}
+  .summary,.printnote{break-inside:avoid}
+  .printonly{display:block;font-size:15pt;font-weight:700;margin:0 0 4pt}
+  .printnote{display:block;font-size:8pt;color:#333;margin-top:6pt}
+  a{color:#000;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Quality Tester <span>Solutions</span></a>
+  <nav><a class="btn small ghost" href="../">Full Excel templates — $49</a></nav>
+</div></header>
+
+<main class="wrap">
+<article class="prose">
+<p class="meta noprint">Free tool · no sign-up · runs in your browser</p>
+<h1>Ultimate Pull-Test Load Statistics Calculator</h1>
+<p class="lead noprint">For anchors and fasteners taken to failure: paste the peak loads and get the sample statistics a report usually needs, including the characteristic value mean − k × s with the k factor from your standard.</p>
+
+<h2>Inputs</h2>
+<div class="grid">
+  <div><label for="unit">Force unit</label><select id="unit"><option>kN</option><option>lbf</option></select></div>
+  <div><label for="k">k factor (from your standard)</label><input id="k" type="number" step="any" min="0" inputmode="decimal"></div>
+  <div><label for="design">Design load (optional)</label><input id="design" type="number" step="any" min="0" inputmode="decimal"></div>
+</div>
+<p style="margin-top:14px"><label for="loads" class="tiny">Peak loads, one per line or separated by commas / spaces</label><br>
+<textarea id="loads" rows="8" style="width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit;font-family:'IBM Plex Mono',monospace" placeholder="25.1&#10;27.4&#10;24.8&#10;26.0&#10;25.5"></textarea></p>
+<p class="tiny noprint">Nothing you type is uploaded or saved.</p>
+
+<h2>Results</h2>
+<table class="summary">
+<tr><td>Number of tests, n</td><td id="r-n"></td></tr>
+<tr><td>Mean</td><td id="r-mean"></td></tr>
+<tr><td>Sample standard deviation, s</td><td id="r-s"></td></tr>
+<tr><td>Coefficient of variation, s / mean</td><td id="r-cov"></td></tr>
+<tr><td>Minimum</td><td id="r-min"></td></tr>
+<tr><td>Maximum</td><td id="r-max"></td></tr>
+<tr><td>Characteristic value, mean − k × s</td><td id="r-char"></td></tr>
+<tr><td>Minimum / design load</td><td id="r-ratio"></td></tr>
+</table>
+<p id="warn" class="tiny"></p>
+<p class="noprint"><button class="btn small ghost" type="button" onclick="window.print()">Print results</button></p>
+<p class="printnote">Calculated with the free tool at calyx-ai.net/qa/ultimate-load-calculator/ (Quality Tester Solutions LLC).</p>
+
+<div class="noprint">
+<h2>How it is calculated</h2>
+<p>Mean is the arithmetic average. s is the <em>sample</em> standard deviation (divides by n − 1, the same as STDEV / STDEV.S in Excel), so it needs at least two results. Coefficient of variation is s divided by the mean. The characteristic value is mean − k × s using the k you enter; the minimum / design ratio is the lowest result divided by the design load you enter.</p>
+<h2>Where k comes from</h2>
+<p>This calculator does not choose k for you. The factor depends on the number of tests, the confidence level and the fractile your document requires, so take it from the standard or specification governing the job (for example ACI 355.2, ACI 355.4, ICC-ES AC193 / AC308 or BS 8539, whichever applies), or from the engineer of record. The same goes for how many anchors to test and what result is acceptable. Check the current edition with its publisher.</p>
+<p>Recording proof tests instead? Use the free <a href="../pull-test-record-sheet/">pull-test record sheet</a>, which marks each row PASS or FAIL. For what a full report should include, see <a href="../../blog/anchor-pull-test-report/">What an anchor and fastener pull-test report should include</a>.</p>
+</div>
+
+<div class="buy noprint">
+  <h2>Want this inside your report?</h2>
+  <p>The <strong>Fastener &amp; Anchor Pull-Test Report Templates</strong> pack has these statistics as an Excel sheet next to a 40-row proof-test report with automatic PASS/FAIL, a calibration log, a kN/lbf/mm/in converter, a printable procedure checklist and a standards index. $49 one-time, from Quality Tester Solutions LLC, the company behind <a href="https://force-test.com/">Force-Test</a> pull testers.</p>
+  <div class="cta-row" style="justify-content:center"><a class="btn" href="../?utm_source=tool&amp;utm_campaign=ultimate-calc">See the full template pack</a></div>
+</div>
+</article>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · <a href="../">Pull-test report templates</a> · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>
+(function(){
+function $(i){return document.getElementById(i);}
+function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
+function fmt(x,d){return isFinite(x)?(Math.round(x*Math.pow(10,d||3))/Math.pow(10,d||3)).toString():"";}
+function calc(){
+  var u=$("unit").value,k=num($("k").value),dl=num($("design").value),bad=[],xs=[];
+  $("loads").value.split(/[\s,;]+/).forEach(function(t){if(!t)return;var n=Number(t);if(isFinite(n))xs.push(n);else bad.push(t);});
+  var n=xs.length,ids=["r-n","r-mean","r-s","r-cov","r-min","r-max","r-char","r-ratio"];
+  ids.forEach(function(i){$(i).textContent="";});
+  $("warn").textContent=bad.length?"Ignored (not a number): "+bad.slice(0,5).join(", "):"";
+  if(!n)return;
+  var mean=xs.reduce(function(a,b){return a+b;},0)/n,mn=Math.min.apply(null,xs),mx=Math.max.apply(null,xs);
+  $("r-n").textContent=n;$("r-mean").textContent=fmt(mean)+" "+u;$("r-min").textContent=fmt(mn)+" "+u;$("r-max").textContent=fmt(mx)+" "+u;
+  if(dl)$("r-ratio").textContent=fmt(mn/dl);
+  if(n<2){$("r-s").textContent="needs at least 2 results";return;}
+  var s=Math.sqrt(xs.reduce(function(a,x){return a+(x-mean)*(x-mean);},0)/(n-1));
+  $("r-s").textContent=fmt(s)+" "+u;$("r-cov").textContent=mean?fmt(100*s/mean,2)+" %":"";
+  $("r-char").textContent=k===null?"enter k":fmt(mean-k*s)+" "+u;}
+document.addEventListener("input",calc);document.addEventListener("change",calc);calc();
+})();
+</script>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fqa%2Fultimate-load-calculator%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
