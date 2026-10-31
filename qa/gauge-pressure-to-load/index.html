@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydraulic Pull Tester Gauge to Load Calculator (psi, bar to kN, lbf) | QTS</title>
+<meta name="description" content="Convert a hydraulic pull tester's gauge reading (psi, bar, MPa) to load in kN or lbf, find the gauge target for a proof load, and print a load chart. Free.">
+<link rel="canonical" href="https://calyx-ai.net/qa/gauge-pressure-to-load/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pull tester gauge pressure to load calculator">
+<meta property="og:description" content="Gauge reading to kN or lbf from the ram's effective area, the gauge target for a proof load, and a printable load chart. Free, in your browser.">
+<meta property="og:url" content="https://calyx-ai.net/qa/gauge-pressure-to-load/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Pull Tester Gauge Pressure to Load Calculator","url":"https://calyx-ai.net/qa/gauge-pressure-to-load/","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Converts a hydraulic tester gauge reading in psi, bar, MPa or kPa to load in kN and lbf as pressure times the user's ram effective area, gives the gauge reading for a target load, and prints a load chart.","publisher":{"@type":"Organization","name":"Quality Tester Solutions LLC","url":"https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:1000px;margin:0 auto;padding:40px 0 24px}
+.prose{max-width:760px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem;font-family:inherit}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{color:var(--muted);font-weight:500}
+input,select{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px 16px}
+.grid label{display:block;font-size:.85rem;color:var(--muted)}
+.sheet{overflow-x:auto}
+.res{font-weight:700;text-align:center}.PASS{color:var(--ok)}.FAIL{color:var(--accent-2)}
+.summary td:first-child{color:var(--muted);width:40%}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.printnote,.printonly{display:none}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media print{
+  @page{size:Letter landscape;margin:10mm}
+  body{background:#fff;color:#000;font-family:Arial,sans-serif;font-size:9.5pt;line-height:1.3}
+  header,footer,.noprint,.buy{display:none!important}
+  article{padding:0;max-width:none}h1{font-size:15pt;margin:0 0 6pt;color:#000}h2{font-size:11pt;margin:8pt 0 4pt;color:#000}
+  input,select{background:#fff;color:#000;border:0;border-bottom:1px solid #777;border-radius:0;padding:1pt 2pt;font-size:9pt;-webkit-appearance:none;appearance:none}
+  table td,table th{border:1px solid #777;padding:2pt 3pt;color:#000}
+  .sheet td input,.sheet td select{border:0}
+  .grid{grid-template-columns:repeat(4,1fr);gap:4pt 10pt}.grid label{color:#000;font-size:8pt}
+  .PASS,.FAIL,.summary td:first-child{color:#000}
+  .summary,.printnote{break-inside:avoid}
+  .printonly{display:block;font-size:15pt;font-weight:700;margin:0 0 4pt}
+  .printnote{display:block;font-size:8pt;color:#333;margin-top:6pt}
+  a{color:#000;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Quality Tester <span>Solutions</span></a>
+  <nav><a class="btn small ghost" href="../">Full Excel templates — $49</a></nav>
+</div></header>
+
+<main class="wrap">
+<article class="prose">
+<p class="meta noprint">Free tool · no sign-up · runs in your browser</p>
+<h1>Pull Tester Gauge Pressure to Load Calculator</h1>
+<p class="lead noprint">Many hydraulic pull testers read pressure, while the spec gives the proof load in kN or lbf. Enter the ram's effective area once, then convert either way and print a chart to keep with the tester.</p>
+
+<h2>Your tester</h2>
+<div class="grid">
+  <div><label for="tester">Tester / ID</label><input id="tester" type="text"></div>
+  <div><label for="area">Ram effective area</label><input id="area" type="number" step="any" min="0" inputmode="decimal"></div>
+  <div><label for="aunit">Area unit</label><select id="aunit"><option value="0.00064516">in²</option><option value="0.0001">cm²</option><option value="0.000001">mm²</option></select></div>
+  <div><label for="punit">Gauge unit</label><select id="punit"><option value="6894.757293168361">psi</option><option value="100000">bar</option><option value="1000000">MPa</option><option value="1000">kPa</option></select></div>
+</div>
+<p class="tiny noprint">Use the effective area from the tester's documentation. Nothing you type is uploaded or saved.</p>
+
+<h2 class="noprint">Gauge reading to load</h2>
+<div class="grid noprint">
+  <div><label for="p-in">Gauge reading</label><input id="p-in" type="number" step="any" inputmode="decimal"></div>
+  <div><label>Load</label><div id="p-out" class="res">–</div></div>
+</div>
+
+<h2 class="noprint">Proof load to gauge target</h2>
+<div class="grid noprint">
+  <div><label for="f-in">Target load</label><input id="f-in" type="number" step="any" inputmode="decimal"></div>
+  <div><label for="f-unit">Load unit</label><select id="f-unit"><option value="1000">kN</option><option value="4.4482216152605">lbf</option></select></div>
+  <div><label>Gauge reading</label><div id="f-out" class="res">–</div></div>
+</div>
+
+<h2>Load chart</h2>
+<div class="grid noprint">
+  <div><label for="c-unit">Chart load unit</label><select id="c-unit"><option value="1000">kN</option><option value="4.4482216152605">lbf</option></select></div>
+  <div><label for="c-step">Step</label><input id="c-step" type="number" step="any" min="0" inputmode="decimal" value="5"></div>
+  <div><label for="c-max">Up to</label><input id="c-max" type="number" step="any" min="0" inputmode="decimal" value="50"></div>
+</div>
+<div class="sheet"><table id="chart"><tr><th>Load</th><th>Load (other unit)</th><th>Gauge reading</th></tr></table></div>
+<p id="c-msg" class="tiny noprint">Enter the ram effective area to fill the chart.</p>
+<div class="cta-row noprint"><button class="btn small" type="button" onclick="window.print()">Print chart</button></div>
+<p class="printnote">Ideal load = gauge pressure × ram effective area. Where the tester's calibration certificate gives a pressure-to-load table, that table takes precedence. Calculated with the free tool at calyx-ai.net/qa/gauge-pressure-to-load/ (Quality Tester Solutions LLC).</p>
+
+<div class="noprint">
+<h2>How the conversion works</h2>
+<p>Load = gauge pressure × ram effective area. With pressure in pascals and area in square metres the result is in newtons; the tool converts units with exact definitions (1 psi = 1 lbf/in², 1 bar = 100 kPa, 1 lbf = 4.4482216152605 N, 1 in = 25.4 mm). Two quick checks: 1,000 psi on a 1 in² ram is 1,000 lbf, and 100 bar on a 10 cm² ram is 10 kN.</p>
+<p>This is the ideal relation. Seal friction and gauge error make a real tester read differently, which is why testers are calibrated. Where the calibration certificate gives a pressure-to-load table, use that table, and use this tool for planning and cross-checks. The tool does not choose loads or limits; those come from your spec.</p>
+<p>Recording the test? The free <a href="../pull-test-record-sheet/">pull-test record sheet</a> marks each row PASS or FAIL against the proof load. Planning it? The <a href="../proof-test-sample-size/">sample size and proof load calculator</a> works out how many anchors to test and at what load, and the <a href="../calibration-due-date/">calibration due-date checker</a> flags testers that are overdue.</p>
+</div>
+
+<div class="buy noprint">
+  <h2>Record the results in the full report workbook</h2>
+  <p>The <strong>Fastener &amp; Anchor Pull-Test Report Templates</strong> pack has a 40-row proof-test report with automatic PASS/FAIL, ultimate-load statistics, a calibration log, a unit converter, a printable procedure checklist and a standards index. $49 one-time, from Quality Tester Solutions LLC, the company behind <a href="https://force-test.com/">Force-Test</a> pull testers.</p>
+  <div class="cta-row" style="justify-content:center"><a class="btn" href="../?utm_source=tool&amp;utm_campaign=gauge-to-load">See the full template pack</a></div>
+</div>
+</article>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · <a href="../">Pull-test report templates</a> · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>
+(function(){
+var LBF=4.4482216152605;
+function $(i){return document.getElementById(i);}
+function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
+function fmt(x,d){return isFinite(x)?(Math.round(x*Math.pow(10,d))/Math.pow(10,d)).toLocaleString("en-US",{maximumFractionDigits:d}):"";}
+function areaM2(){var a=num($("area").value);return (a===null||a<=0)?null:a*Number($("aunit").value);}
+function pa(){return Number($("punit").value);}
+function pname(){return $("punit").options[$("punit").selectedIndex].text;}
+function forceN(p){return p*pa()*areaM2();}
+function both(N){return fmt(N/1000,3)+" kN = "+fmt(N/LBF,1)+" lbf";}
+function upd(){
+  var A=areaM2(),p=num($("p-in").value),f=num($("f-in").value);
+  $("p-out").textContent=(A===null||p===null)?"–":both(forceN(p));
+  $("f-out").textContent=(A===null||f===null)?"–":fmt(f*Number($("f-unit").value)/A/pa(),2)+" "+pname();
+  var t=$("chart");while(t.rows.length>1)t.deleteRow(1);
+  var cu=Number($("c-unit").value),cn=cu===1000?"kN":"lbf",on=cu===1000?"lbf":"kN",ou=cu===1000?LBF:1000;
+  var st=num($("c-step").value),mx=num($("c-max").value),msg="";
+  if(A===null)msg="Enter the ram effective area to fill the chart.";
+  else if(st===null||mx===null||st<=0||mx<=0)msg="Enter a step and a maximum above zero.";
+  else if(mx/st>100)msg="That is more than 100 rows; use a larger step.";
+  else{for(var i=1;i*st<=mx+1e-9;i++){var L=i*st,N=L*cu,r=t.insertRow(-1);
+    r.insertCell(0).textContent=fmt(L,3)+" "+cn;r.insertCell(1).textContent=fmt(N/ou,cu===1000?0:2)+" "+on;
+    r.insertCell(2).textContent=fmt(N/A/pa(),2)+" "+pname();}}
+  $("c-msg").textContent=msg;
+}
+document.addEventListener("input",upd);document.addEventListener("change",upd);upd();
+})();
+</script>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fqa%2Fgauge-pressure-to-load%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
