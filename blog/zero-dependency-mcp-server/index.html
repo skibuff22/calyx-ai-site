@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Zero-Dependency MCP Server in One File | Calyx AI</title>
+<meta name="description" content="An MCP tool server over stdio is line-delimited JSON-RPC and four methods. One in 119 lines of Node with no packages, and the error split we got wrong.">
+<link rel="canonical" href="https://calyx-ai.net/blog/zero-dependency-mcp-server/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A zero-dependency MCP server in one file: what the protocol actually needs">
+<meta property="og:description" content="An MCP tool server over stdio is line-delimited JSON-RPC and four methods. One in 119 lines of Node with no packages, and the error split we got wrong.">
+<meta property="og:url" content="https://calyx-ai.net/blog/zero-dependency-mcp-server/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "A zero-dependency MCP server in one file: what the protocol actually needs", "description": "An MCP tool server over stdio is line-delimited JSON-RPC and four methods. One in 119 lines of Node with no packages, and the error split we got wrong.", "datePublished": "2026-10-31", "dateModified": "2026-10-31", "mainEntityOfPage": "https://calyx-ai.net/blog/zero-dependency-mcp-server/", "author": {"@type": "Organization", "name": "Calyx AI"}, "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+pre{background:#0b0d11;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#d7dae0;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:720px;margin:0 auto;padding:40px 0 24px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+.math{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin:18px 0}
+.math div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.math b{display:block;font-family:"Barlow Semi Condensed";font-size:1.8rem;color:var(--accent-2)}
+table{width:100%;border-collapse:collapse;font-size:.97rem}td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:500}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media (max-width:820px){.math{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Calyx<span>AI</span></a>
+  <nav><a class="btn small" href="https://calyx-ai.net/#publish-gate">Publish Gate</a></nav>
+</div></header>
+
+<main class="wrap">
+<article>
+<p class="meta">Calyx AI · October 31, 2026 · 6 min read</p>
+<h1>A zero-dependency MCP server in one file: what the protocol actually needs</h1>
+<p class="lead">We wanted two checks from our publish gate available inside any MCP client: "is every number in this draft in my facts file" and "does every link in it load". The official SDKs are fine, but for two tools we did not want a dependency tree, so we wrote the server against the protocol directly. It is one file, 119 lines, and it imports only <code>node:fs</code> and <code>node:readline</code>. We also got one part of the protocol wrong on the first pass, which is the most useful section below.</p>
+
+<h2>What a stdio MCP server has to do</h2>
+<p>For a tools-only server on the stdio transport, the job is small:</p>
+<ul>
+<li>Read JSON-RPC 2.0 messages from stdin, one per line.</li>
+<li>Write one JSON reply per line to stdout. The spec says the server must not write anything to stdout that is not a valid MCP message; logs go to stderr. <a class="tiny" href="https://modelcontextprotocol.io/specification/2025-06-18/basic/transports">[source]</a></li>
+<li>Answer four methods: <code>initialize</code>, <code>tools/list</code>, <code>tools/call</code> and <code>ping</code>.</li>
+<li>Stay silent on notifications (messages without an <code>id</code>), such as <code>notifications/initialized</code>.</li>
+</ul>
+<p>The read loop is <code>readline</code> over stdin. This is the same logic as <code>server.js</code>, restructured for reading:</p>
+<pre><code>const rl = createInterface({ input: process.stdin });
+rl.on(&quot;line&quot;, async (line) =&gt; {
+  let msg;
+  try { msg = JSON.parse(line); } catch { return; }   // blank or bad line: ignore
+  const reply = (body) =&gt; {
+    if (msg.id === undefined) return;                 // notification: never reply
+    process.stdout.write(JSON.stringify({ jsonrpc: &quot;2.0&quot;, id: msg.id, ...body }) + &quot;\n&quot;);
+  };
+  try {
+    const result = await handle(msg);
+    if (result === undefined) return;
+    reply({ result });
+  } catch (e) {
+    reply({ error: { code: e.code ?? -32603, message: e.message } });
+  }
+});</code></pre>
+<p>And <code>handle</code> is a switch:</p>
+<pre><code>switch (method) {
+  case &quot;initialize&quot;:
+    return { protocolVersion: params?.protocolVersion ?? &quot;2025-06-18&quot;,
+             capabilities: { tools: {} },
+             serverInfo: { name: &quot;publish-gate&quot;, version: VERSION } };
+  case &quot;tools/list&quot;: return { tools: TOOLS };
+  case &quot;tools/call&quot;: /* run the tool, see below */
+  case &quot;ping&quot;: return {};
+  default:
+    if (id === undefined) return undefined;            // notification: no reply
+    throw Object.assign(new Error(`method not found: ${method}`), { code: -32601 });
+}</code></pre>
+<p><code>initialize</code> echoes the client's protocol version. That is a shortcut: it works because a tools-only server uses so little of the protocol, and a server that relies on newer features should negotiate properly.</p>
+<h2>Two kinds of error, and the one we got wrong</h2>
+<p>The MCP spec splits tool errors in two. Protocol errors are ordinary JSON-RPC errors, for things like an unknown tool or invalid arguments. Tool execution errors are a normal result with <code>isError: true</code>, for failures while the tool runs. <a class="tiny" href="https://modelcontextprotocol.io/specification/2025-06-18/server/tools">[source]</a></p>
+<p>Our first version put everything in the second bucket: an unknown tool name or a call with no draft came back as an <code>isError</code> result. That does not follow the spec. The fix is a coded error for bad calls and a rethrow, so the read loop turns it into a JSON-RPC error:</p>
+<pre><code>const invalidParams = (message) =&gt; Object.assign(new Error(message), { code: -32602 });
+
+// in callTool: reject bad calls before doing any work
+if (TOOLS.some((t) =&gt; t.name === name) === false) throw invalidParams(`unknown tool: ${name}`);
+if (args.draft_text == null &amp;&amp; args.draft_path == null) throw invalidParams(&quot;give draft_text or draft_path&quot;);
+
+// in handle, case &quot;tools/call&quot;:
+try { return await callTool(params?.name, params?.arguments); }
+catch (e) {
+  if (e.code === -32602) throw e;                       // protocol error
+  return { content: [{ type: &quot;text&quot;, text: `error: ${e.message}` }], isError: true };
+}</code></pre>
+<p>Now an unknown tool or a missing draft gets <code>-32602</code>, an unknown method gets <code>-32601</code>, an unreadable <code>draft_path</code> file comes back as an <code>isError</code> result starting with <code>error: </code>, and anything else thrown becomes <code>-32603</code>. A new stdio test sends an unknown tool, a call without a draft, an unreadable <code>draft_path</code> and an unknown method, and checks each reply.</p>
+<p>Each tool returns plain text: <code>PASS</code>, or <code>FAIL (n)</code> followed by one line per finding. That is a design choice for a model reading the result, not something we measured.</p>
+<h2>Replies can arrive out of order</h2>
+<p>Handlers are <code>async</code>, so a slow call can finish after a fast one. In a test session today, request 4 (an unknown method) was answered before request 3 (a <code>tools/call</code> to <code>check_numbers</code>). That is allowed: clients match replies by <code>id</code>, never by order. Do not "fix" it with a queue unless a tool really needs ordering.</p>
+<h2>Test it without a client</h2>
+<p>You can drive the server from a shell, which is the fastest way to see what a client sees:</p>
+<pre><code>printf &#x27;%s\n&#x27; \
+  &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;initialize&quot;,&quot;params&quot;:{&quot;protocolVersion&quot;:&quot;2025-06-18&quot;}}&#x27; \
+  &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;notifications/initialized&quot;}&#x27; \
+  &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2,&quot;method&quot;:&quot;tools/list&quot;}&#x27; \
+  | node server.js</code></pre>
+<p>For unit tests, the server exports its check functions (<code>checkNumbers</code>, <code>checkLinks</code>) and injects what touches the outside world: <code>checkLinks</code> takes a <code>fetchFn</code>, so <code>node --test</code> runs without the network. The server has 5 tests and they pass on Node v26.7.0.</p>
+<h2>Install it</h2>
+<p>The server is not on npm yet. From a clone, in Claude Code:</p>
+<pre><code>git clone https://github.com/skibuff22/agent-ops-kit-lite
+claude mcp add publish-gate -- node &quot;$PWD/agent-ops-kit-lite/mcp/publish-gate/server.js&quot;</code></pre>
+<p>We have tested it in Claude Code (<code>claude mcp list</code> shows Connected); other stdio MCP clients should take the same setup (command <code>node</code>, the path to <code>server.js</code> as the argument), but we have not tested them. <code>check_numbers</code> takes the draft and your <code>facts.md</code> as text or paths; <code>check_links</code> takes the draft. The source is in <a href="https://github.com/skibuff22/agent-ops-kit-lite">agent-ops-kit-lite</a> (MIT), next to the free Claude Code plugin it belongs to.</p>
+
+<div class="buy">
+  <h2>Want the whole gate?</h2>
+  <p>The MCP server has two of the deterministic checks. <strong>Publish Gate v1</strong> adds style and voice checks, an LLM claim-by-claim check that fails closed, a SHA-256 lock, and publishers that refuse a draft that changed after it passed. $19 one-time, or $29 bundled with the Agent Ops Kit.</p>
+  <div class="cta-row">
+    <a class="btn" href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=mcp-server#publish-gate">See Publish Gate</a>
+    <a class="btn ghost" href="https://github.com/skibuff22/agent-ops-kit-lite">Get the free lite kit + MCP server</a>
+  </div>
+</div>
+<p class="tiny"><em>Written by Calyx AI, a product line of Quality Tester Solutions LLC. Drafted with AI assistance and checked by the gate it describes; the code and the test session are from our own repo.</em></p>
+</article>
+</main>
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · Calyx AI · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fblog%2Fzero-dependency-mcp-server%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
