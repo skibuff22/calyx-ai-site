@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adhesive Anchor Bond Stress Calculator (load to MPa, psi) | QTS</title>
+<meta name="description" content="Convert an adhesive anchor test load to average bond stress, load / (pi x d x embedment), in MPa and psi, or a bond stress back to load. Free, in your browser.">
+<link rel="canonical" href="https://calyx-ai.net/qa/bond-stress-calculator/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Adhesive anchor average bond stress calculator">
+<meta property="og:description" content="Test load to average bond stress (load / (pi x d x hef)) in MPa and psi, and back. Free, in your browser.">
+<meta property="og:url" content="https://calyx-ai.net/qa/bond-stress-calculator/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Adhesive Anchor Bond Stress Calculator","url":"https://calyx-ai.net/qa/bond-stress-calculator/","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Converts an anchor test load to average bond stress as load divided by pi times diameter times embedment depth, in MPa and psi, and a bond stress back to load. No design factors applied.","publisher":{"@type":"Organization","name":"Quality Tester Solutions LLC","url":"https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:1000px;margin:0 auto;padding:40px 0 24px}
+.prose{max-width:760px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem;font-family:inherit}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{color:var(--muted);font-weight:500}
+input,select{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px 16px}
+.grid label{display:block;font-size:.85rem;color:var(--muted)}
+.sheet{overflow-x:auto}
+.res{font-weight:700;text-align:center}.PASS{color:var(--ok)}.FAIL{color:var(--accent-2)}
+.summary td:first-child{color:var(--muted);width:40%}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.printnote,.printonly{display:none}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media print{
+  @page{size:Letter landscape;margin:10mm}
+  body{background:#fff;color:#000;font-family:Arial,sans-serif;font-size:9.5pt;line-height:1.3}
+  header,footer,.noprint,.buy{display:none!important}
+  article{padding:0;max-width:none}h1{font-size:15pt;margin:0 0 6pt;color:#000}h2{font-size:11pt;margin:8pt 0 4pt;color:#000}
+  input,select{background:#fff;color:#000;border:0;border-bottom:1px solid #777;border-radius:0;padding:1pt 2pt;font-size:9pt;-webkit-appearance:none;appearance:none}
+  table td,table th{border:1px solid #777;padding:2pt 3pt;color:#000}
+  .sheet td input,.sheet td select{border:0}
+  .grid{grid-template-columns:repeat(4,1fr);gap:4pt 10pt}.grid label{color:#000;font-size:8pt}
+  .PASS,.FAIL,.summary td:first-child{color:#000}
+  .summary,.printnote{break-inside:avoid}
+  .printonly{display:block;font-size:15pt;font-weight:700;margin:0 0 4pt}
+  .printnote{display:block;font-size:8pt;color:#333;margin-top:6pt}
+  a{color:#000;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Quality Tester <span>Solutions</span></a>
+  <nav><a class="btn small ghost" href="../">Full Excel templates — $49</a></nav>
+</div></header>
+
+<main class="wrap">
+<article class="prose">
+<p class="meta noprint">Free tool · no sign-up · runs in your browser</p>
+<h1>Adhesive Anchor Bond Stress Calculator</h1>
+<p class="lead noprint">Turn a pull-test load on a bonded anchor into an average bond stress, or a bond stress into the load it represents at your diameter and embedment.</p>
+
+<h2>Anchor</h2>
+<div class="grid">
+  <div><label for="anchor">Anchor / product</label><input id="anchor" type="text"></div>
+  <div><label for="d">Anchor diameter d</label><input id="d" type="number" step="any" min="0" inputmode="decimal"></div>
+  <div><label for="h">Embedment depth h<sub>ef</sub></label><input id="h" type="number" step="any" min="0" inputmode="decimal"></div>
+  <div><label for="lunit">Length unit</label><select id="lunit"><option value="1">mm</option><option value="25.4">in</option></select></div>
+</div>
+<h2>Load to average bond stress</h2>
+<div class="grid">
+  <div><label for="n">Load</label><input id="n" type="number" step="any" inputmode="decimal"></div>
+  <div><label for="nunit">Load unit</label><select id="nunit"><option value="1000">kN</option><option value="4.4482216152605">lbf</option></select></div>
+  <div><label>Average bond stress</label><div id="tau-out" class="res">–</div></div>
+</div>
+<h2>Bond stress to load</h2>
+<div class="grid">
+  <div><label for="tau">Bond stress</label><input id="tau" type="number" step="any" inputmode="decimal"></div>
+  <div><label for="tunit">Stress unit</label><select id="tunit"><option value="1">MPa</option><option value="psi">psi</option></select></div>
+  <div><label>Load</label><div id="n-out" class="res">–</div></div>
+</div>
+<p class="tiny">Bonded area π × d × h<sub>ef</sub>: <span id="area">enter d and h<sub>ef</sub></span></p>
+<div class="cta-row noprint"><button class="btn small" type="button" onclick="window.print()">Print results</button></div>
+<p class="printnote">Average bond stress = load ÷ (π × d × h<sub>ef</sub>). Calculated with the free tool at calyx-ai.net/qa/bond-stress-calculator/ (Quality Tester Solutions LLC).</p>
+<p class="tiny noprint">Nothing you type is uploaded or saved.</p>
+
+<div class="noprint">
+<h2>What this number is, and what it is not</h2>
+<p>Average bond stress = load ÷ (π × d × h<sub>ef</sub>): the load spread evenly over the surface of a cylinder with the anchor's diameter and the embedment depth. With load in newtons and lengths in mm the result is in MPa; psi = MPa × 145.0377 (exact factors: 1 lbf = 4.4482216152605 N, 1 in = 25.4 mm). Check: 30 kN on a 12 mm anchor at 100 mm embedment is 7.96 MPa.</p>
+<p>It is an average, not the stress profile along the anchor, and the tool does not apply any reduction, edge, spacing or concrete factors. Which diameter goes into the formula (rod or hole) and how a bond strength from an approval or data sheet compares with this average is set by that document, not by this page. Use it for cross-checks and for reading test results, not for design.</p>
+<p>Recording the pull tests? Use the free <a href="../pull-test-record-sheet/">pull-test record sheet</a>. Testing to failure? The <a href="../ultimate-load-calculator/">ultimate-load statistics calculator</a> gives mean, s, CoV and mean − k × s of the loads.</p>
+</div>
+
+<div class="buy noprint">
+  <h2>Record the results in the full report workbook</h2>
+  <p>The <strong>Fastener &amp; Anchor Pull-Test Report Templates</strong> pack has a 40-row proof-test report with automatic PASS/FAIL, ultimate-load statistics, a calibration log, a unit converter, a printable procedure checklist and a standards index. $49 one-time, from Quality Tester Solutions LLC, the company behind <a href="https://force-test.com/">Force-Test</a> pull testers.</p>
+  <div class="cta-row" style="justify-content:center"><a class="btn" href="../?utm_source=tool&amp;utm_campaign=bond-stress">See the full template pack</a></div>
+</div>
+</article>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · <a href="../">Pull-test report templates</a> · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>
+var LBF=4.4482216152605,PSI=6894.757293168361;
+function $(i){return document.getElementById(i);}
+function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
+function fmt(x,d){return isFinite(x)?(Math.round(x*Math.pow(10,d))/Math.pow(10,d)).toLocaleString("en-US",{maximumFractionDigits:d}):"";}
+function upd(){
+  var d=num($("d").value),h=num($("h").value),lu=Number($("lunit").value);
+  var A=(d===null||h===null||d<=0||h<=0)?null:Math.PI*d*lu*h*lu;
+  $("area").textContent=A===null?"enter d and h_ef":fmt(A,1)+" mm² ("+fmt(A/645.16,3)+" in²)";
+  var n=num($("n").value),nu=Number($("nunit").value);
+  $("tau-out").textContent=(A===null||n===null)?"–":fmt(n*nu/A,2)+" MPa = "+fmt(n*nu/A*1e6/PSI,0)+" psi";
+  var t=num($("tau").value),tm=t===null?null:($("tunit").value==="psi"?t*PSI/1e6:t);
+  $("n-out").textContent=(A===null||tm===null)?"–":fmt(tm*A/1000,2)+" kN = "+fmt(tm*A/LBF,0)+" lbf";
+}
+document.addEventListener("input",upd);document.addEventListener("change",upd);upd();
+</script>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fqa%2Fbond-stress-calculator%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
