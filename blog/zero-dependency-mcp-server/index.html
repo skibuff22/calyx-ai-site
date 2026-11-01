@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>A Zero-Dependency MCP Server in One File | Calyx AI</title>
-<meta name="description" content="An MCP tool server over stdio is line-delimited JSON-RPC and four methods. One in 119 lines of Node with no packages, and the error split we got wrong.">
+<meta name="description" content="An MCP tool server over stdio is line-delimited JSON-RPC and four methods. One in 125 lines of Node with no packages, and the error split we got wrong.">
 <link rel="canonical" href="https://calyx-ai.net/blog/zero-dependency-mcp-server/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="A zero-dependency MCP server in one file: what the protocol actually needs">
-<meta property="og:description" content="An MCP tool server over stdio is line-delimited JSON-RPC and four methods. One in 119 lines of Node with no packages, and the error split we got wrong.">
+<meta property="og:description" content="An MCP tool server over stdio is line-delimited JSON-RPC and four methods. One in 125 lines of Node with no packages, and the error split we got wrong.">
 <meta property="og:url" content="https://calyx-ai.net/blog/zero-dependency-mcp-server/">
 <meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{"@context": "https://schema.org", "@type": "Article", "headline": "A zero-dependency MCP server in one file: what the protocol actually needs", "description": "An MCP tool server over stdio is line-delimited JSON-RPC and four methods. One in 119 lines of Node with no packages, and the error split we got wrong.", "datePublished": "2026-10-31", "dateModified": "2026-10-31", "mainEntityOfPage": "https://calyx-ai.net/blog/zero-dependency-mcp-server/", "author": {"@type": "Organization", "name": "Calyx AI"}, "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
+{"@context": "https://schema.org", "@type": "Article", "headline": "A zero-dependency MCP server in one file: what the protocol actually needs", "description": "An MCP tool server over stdio is line-delimited JSON-RPC and four methods. One in 125 lines of Node with no packages, and the error split we got wrong.", "datePublished": "2026-10-31", "dateModified": "2026-11-01", "mainEntityOfPage": "https://calyx-ai.net/blog/zero-dependency-mcp-server/", "author": {"@type": "Organization", "name": "Calyx AI"}, "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
 </script>
 <style>
 :root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
@@ -57,7 +57,7 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 <article>
 <p class="meta">Calyx AI · October 31, 2026 · 6 min read</p>
 <h1>A zero-dependency MCP server in one file: what the protocol actually needs</h1>
-<p class="lead">We wanted two checks from our publish gate available inside any MCP client: "is every number in this draft in my facts file" and "does every link in it load". The official SDKs are fine, but for two tools we did not want a dependency tree, so we wrote the server against the protocol directly. It is one file, 119 lines, and it imports only <code>node:fs</code> and <code>node:readline</code>. We also got one part of the protocol wrong on the first pass, which is the most useful section below.</p>
+<p class="lead">We wanted two checks from our publish gate available inside any MCP client: "is every number in this draft in my facts file" and "does every link in it load". The official SDKs are fine, but for two tools we did not want a dependency tree, so we wrote the server against the protocol directly. It is one file, 125 lines, and it imports only <code>node:fs</code> and <code>node:readline</code>. We also got the error split wrong, twice, which makes it the most useful section below.</p>
 
 <h2>What a stdio MCP server has to do</h2>
 <p>For a tools-only server on the stdio transport, the job is small:</p>
@@ -87,7 +87,8 @@ rl.on(&quot;line&quot;, async (line) =&gt; {
 <p>And <code>handle</code> is a switch:</p>
 <pre><code>switch (method) {
   case &quot;initialize&quot;:
-    return { protocolVersion: params?.protocolVersion ?? &quot;2025-06-18&quot;,
+    return { protocolVersion: PROTOCOL_VERSIONS.includes(params?.protocolVersion)
+               ? params.protocolVersion : PROTOCOL_VERSIONS[0],   // [&quot;2025-11-25&quot;, &quot;2025-06-18&quot;]
              capabilities: { tools: {} },
              serverInfo: { name: &quot;publish-gate&quot;, version: VERSION } };
   case &quot;tools/list&quot;: return { tools: TOOLS };
@@ -97,15 +98,16 @@ rl.on(&quot;line&quot;, async (line) =&gt; {
     if (id === undefined) return undefined;            // notification: no reply
     throw Object.assign(new Error(`method not found: ${method}`), { code: -32601 });
 }</code></pre>
-<p><code>initialize</code> echoes the client's protocol version. That is a shortcut: it works because a tools-only server uses so little of the protocol, and a server that relies on newer features should negotiate properly.</p>
+<p><code>initialize</code> answers with the client's protocol version only if it is one of the revisions we checked the server against; otherwise it offers the newest of those. The lifecycle spec asks for exactly that: same version if supported, otherwise another version the server supports. <a class="tiny" href="https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle">[source]</a> The first version echoed whatever the client sent, which told a client asking for a newer revision that the server followed rules it had never been checked against.</p>
 <h2>Two kinds of error, and the one we got wrong</h2>
-<p>The MCP spec splits tool errors in two. Protocol errors are ordinary JSON-RPC errors, for things like an unknown tool or invalid arguments. Tool execution errors are a normal result with <code>isError: true</code>, for failures while the tool runs. <a class="tiny" href="https://modelcontextprotocol.io/specification/2025-06-18/server/tools">[source]</a></p>
-<p>Our first version put everything in the second bucket: an unknown tool name or a call with no draft came back as an <code>isError</code> result. That does not follow the spec. The fix is a coded error for bad calls and a rethrow, so the read loop turns it into a JSON-RPC error:</p>
+<p><strong>Update 2026-11-01:</strong> a reader on dev.to pointed out that this section followed the 2025-06-18 revision, and the 2025-11-25 revision moved input validation errors to the other bucket (SEP-1303). <a class="tiny" href="https://modelcontextprotocol.io/specification/2025-11-25/changelog">[source]</a> They were right; the code and this section are corrected below.</p>
+<p>The MCP spec splits tool errors in two. Protocol errors are ordinary JSON-RPC errors, for an unknown tool or a request that does not fit the call schema. Tool execution errors are a normal result with <code>isError: true</code>, for input validation errors and failures while the tool runs, so the model sees the message and can retry. Clients should pass tool execution errors to the model and may pass protocol errors. <a class="tiny" href="https://modelcontextprotocol.io/specification/2025-11-25/server/tools">[source]</a></p>
+<p>Our first version put everything in the second bucket. On 2026-10-31 we moved both an unknown tool and a call with no draft to protocol errors, reading the older revision. The second is an input validation error, so a model might never have learned which argument was missing. Now only an unknown tool gets a coded error, rethrown so the read loop turns it into a JSON-RPC error:</p>
 <pre><code>const invalidParams = (message) =&gt; Object.assign(new Error(message), { code: -32602 });
 
 // in callTool: reject bad calls before doing any work
 if (TOOLS.some((t) =&gt; t.name === name) === false) throw invalidParams(`unknown tool: ${name}`);
-if (args.draft_text == null &amp;&amp; args.draft_path == null) throw invalidParams(&quot;give draft_text or draft_path&quot;);
+if (args.draft_text == null &amp;&amp; args.draft_path == null) throw new Error(&quot;give draft_text or draft_path&quot;);
 
 // in handle, case &quot;tools/call&quot;:
 try { return await callTool(params?.name, params?.arguments); }
@@ -113,18 +115,18 @@ catch (e) {
   if (e.code === -32602) throw e;                       // protocol error
   return { content: [{ type: &quot;text&quot;, text: `error: ${e.message}` }], isError: true };
 }</code></pre>
-<p>Now an unknown tool or a missing draft gets <code>-32602</code>, an unknown method gets <code>-32601</code>, an unreadable <code>draft_path</code> file comes back as an <code>isError</code> result starting with <code>error: </code>, and anything else thrown becomes <code>-32603</code>. A new stdio test sends an unknown tool, a call without a draft, an unreadable <code>draft_path</code> and an unknown method, and checks each reply.</p>
+<p>Now an unknown tool gets <code>-32602</code>, an unknown method gets <code>-32601</code>, a call without a draft and an unreadable <code>draft_path</code> file both come back as an <code>isError</code> result starting with <code>error: </code>, and anything else thrown becomes <code>-32603</code>. A stdio test sends an unknown tool, a call without a draft, an unreadable <code>draft_path</code> and an unknown method, and checks each reply; another checks the version answer for a known, an unknown and a missing <code>protocolVersion</code>.</p>
 <p>Each tool returns plain text: <code>PASS</code>, or <code>FAIL (n)</code> followed by one line per finding. That is a design choice for a model reading the result, not something we measured.</p>
 <h2>Replies can arrive out of order</h2>
-<p>Handlers are <code>async</code>, so a slow call can finish after a fast one. In a test session today, request 4 (an unknown method) was answered before request 3 (a <code>tools/call</code> to <code>check_numbers</code>). That is allowed: clients match replies by <code>id</code>, never by order. Do not "fix" it with a queue unless a tool really needs ordering.</p>
+<p>Handlers are <code>async</code>, so a slow call can finish after a fast one. In a test session on 2026-10-31, request 4 (an unknown method) was answered before request 3 (a <code>tools/call</code> to <code>check_numbers</code>). That is allowed: clients match replies by <code>id</code>, never by order. Do not "fix" it with a queue unless a tool really needs ordering.</p>
 <h2>Test it without a client</h2>
-<p>You can drive the server from a shell, which is the fastest way to see what a client sees:</p>
+<p>You can drive the server from a shell, which is a quick way to see what a client sees:</p>
 <pre><code>printf &#x27;%s\n&#x27; \
   &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;initialize&quot;,&quot;params&quot;:{&quot;protocolVersion&quot;:&quot;2025-06-18&quot;}}&#x27; \
   &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;notifications/initialized&quot;}&#x27; \
   &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2,&quot;method&quot;:&quot;tools/list&quot;}&#x27; \
   | node server.js</code></pre>
-<p>For unit tests, the server exports its check functions (<code>checkNumbers</code>, <code>checkLinks</code>) and injects what touches the outside world: <code>checkLinks</code> takes a <code>fetchFn</code>, so <code>node --test</code> runs without the network. The server has 5 tests and they pass on Node v26.7.0.</p>
+<p>For unit tests, the server exports its check functions (<code>checkNumbers</code>, <code>checkLinks</code>) and injects what touches the outside world: <code>checkLinks</code> takes a <code>fetchFn</code>, so <code>node --test</code> runs without the network. The server has 6 tests and they pass on Node v26.7.0.</p>
 <h2>Install it</h2>
 <p>The server is not on npm yet. From a clone, in Claude Code:</p>
 <pre><code>git clone https://github.com/skibuff22/agent-ops-kit-lite
