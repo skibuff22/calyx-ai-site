@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pull Tester Accuracy Check: % Error vs Reference Load | QTS</title>
+<meta name="description" content="Check a pull tester against a reference load cell: error and % error at each point, PASS/FAIL against your tolerance, printable for the calibration log. Free.">
+<link rel="canonical" href="https://calyx-ai.net/qa/tester-accuracy-check/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pull tester accuracy check: indicated vs reference load, % error">
+<meta property="og:description" content="Error and % error per point against a reference load cell, PASS/FAIL against your tolerance, printable. Free, in your browser.">
+<meta property="og:url" content="https://calyx-ai.net/qa/tester-accuracy-check/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "WebApplication", "name": "Pull Tester Accuracy Check", "url": "https://calyx-ai.net/qa/tester-accuracy-check/", "applicationCategory": "BusinessApplication", "operatingSystem": "Any (web browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Compares tester readings with a reference load at each point: error, % error and PASS/FAIL against a user-entered tolerance.", "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:1000px;margin:0 auto;padding:40px 0 24px}
+.prose{max-width:760px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem;font-family:inherit}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{color:var(--muted);font-weight:500}
+input,select{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px 16px}
+.grid label{display:block;font-size:.85rem;color:var(--muted)}
+.sheet{overflow-x:auto}
+.res{font-weight:700;text-align:center}.PASS{color:var(--ok)}.FAIL{color:var(--accent-2)}
+.summary td:first-child{color:var(--muted);width:40%}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.printnote,.printonly{display:none}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media print{
+  @page{size:Letter landscape;margin:10mm}
+  body{background:#fff;color:#000;font-family:Arial,sans-serif;font-size:9.5pt;line-height:1.3}
+  header,footer,.noprint,.buy{display:none!important}
+  article{padding:0;max-width:none}h1{font-size:15pt;margin:0 0 6pt;color:#000}h2{font-size:11pt;margin:8pt 0 4pt;color:#000}
+  input,select{background:#fff;color:#000;border:0;border-bottom:1px solid #777;border-radius:0;padding:1pt 2pt;font-size:9pt;-webkit-appearance:none;appearance:none}
+  table td,table th{border:1px solid #777;padding:2pt 3pt;color:#000}
+  .sheet td input,.sheet td select{border:0}
+  .grid{grid-template-columns:repeat(4,1fr);gap:4pt 10pt}.grid label{color:#000;font-size:8pt}
+  .PASS,.FAIL,.summary td:first-child{color:#000}
+  .summary,.printnote{break-inside:avoid}
+  .printonly{display:block;font-size:15pt;font-weight:700;margin:0 0 4pt}
+  .printnote{display:block;font-size:8pt;color:#333;margin-top:6pt}
+  a{color:#000;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Quality Tester <span>Solutions</span></a>
+  <nav><a class="btn small ghost" href="../">Full Excel templates — $49</a></nav>
+</div></header>
+
+<main class="wrap">
+<article class="prose">
+<p class="meta noprint">Free tool · no sign-up · runs in your browser</p>
+<h1>Pull Tester Accuracy Check: Indicated vs Reference Load</h1>
+<p class="lead noprint">Load the tester against a reference load cell, type both readings at each point, and get the error and % error per point with PASS/FAIL against the tolerance your procedure sets. Print it for the calibration log.</p>
+
+<h2>Check details</h2>
+<div class="grid">
+  <div><label for="tester">Tester / ID</label><input id="tester" type="text"></div>
+  <div><label for="ref">Reference device / ID</label><input id="ref" type="text"></div>
+  <div><label for="date">Date</label><input id="date" type="date"></div>
+  <div><label for="by">Checked by</label><input id="by" type="text"></div>
+  <div><label for="unit">Load unit</label><select id="unit"><option>kN</option><option>lbf</option><option>N</option><option>kip</option></select></div>
+  <div><label for="tol">Tolerance ± % of reading</label><input id="tol" type="number" step="any" min="0" inputmode="decimal"></div>
+</div>
+<p class="tiny noprint">The tolerance comes from your procedure or the standard it names; the tool does not set one. Nothing you type is uploaded or saved.</p>
+
+<h2>Readings</h2>
+<div class="sheet"><table><thead><tr><th>#</th><th>Reference load</th><th>Tester reading</th><th>Error</th><th>% error</th><th>Result</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="cta-row noprint"><button class="btn small ghost" type="button" id="add">Add 5 rows</button><button class="btn small" type="button" onclick="window.print()">Print results</button></div>
+
+<h2>Summary</h2>
+<table class="summary">
+  <tr><td>Points checked</td><td id="s-n">–</td></tr>
+  <tr><td>PASS / FAIL</td><td id="s-pf">–</td></tr>
+  <tr><td>Largest |% error|</td><td id="s-max">–</td></tr>
+  <tr><td>Overall result</td><td id="s-res" class="res">–</td></tr>
+</table>
+<p class="printnote">Error = tester reading − reference load; % error = error / reference load × 100; PASS when |% error| ≤ tolerance. Checked with the free tool at calyx-ai.net/qa/tester-accuracy-check/ (Quality Tester Solutions LLC). Signature: ____________________</p>
+
+<div class="noprint">
+<h2>How it works</h2>
+<p>For each point: error = tester reading − reference load, and % error = error / reference load × 100. A positive error means the tester reads high. A point is PASS when the absolute % error is no more than the tolerance you enter; the overall result is PASS only when every point with both readings passes. A row without both readings gets no result. Check: reference 10.00 kN, tester 10.15 kN gives +0.15 kN and +1.50 %, which is FAIL at ±1 % and PASS at ±2 %.</p>
+<p>This is an in-house check between calibrations, not a calibration. The tool does not choose the check loads, the number of points or the tolerance, and it takes the reference reading as correct. Record the formal calibration and its due date on the <a href="../calibration-due-date/">calibration due-date checker</a>. On a hydraulic tester, the <a href="../gauge-pressure-to-load/">gauge pressure to load calculator</a> turns gauge readings into load, and the <a href="../hydraulic-ram-effective-area/">ram effective area calculator</a> gives the area it needs. Mixed units? Use the <a href="../force-unit-converter/">force unit converter</a>.</p>
+</div>
+
+<div class="buy noprint">
+  <h2>Keep the calibration log in the full workbook</h2>
+  <p>The <strong>Fastener &amp; Anchor Pull-Test Report Templates</strong> pack has a 40-row proof-test report with automatic PASS/FAIL, ultimate-load statistics, a calibration log, a unit converter, a printable procedure checklist and a standards index. $49 one-time, from Quality Tester Solutions LLC, the company behind <a href="https://force-test.com/">Force-Test</a> pull testers.</p>
+  <div class="cta-row" style="justify-content:center"><a class="btn" href="../?utm_source=tool&amp;utm_campaign=accuracy-check">See the full template pack</a></div>
+</div>
+</article>
+</main>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · <a href="../">Pull-test report templates</a> · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>
+(function(){
+function $(id){return document.getElementById(id);}
+function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
+function f(x,d){return Number(x.toFixed(d)).toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});}
+var n=0;function add(k){for(var i=0;i<k&&n<40;i++){n++;var tr=document.createElement("tr");
+  tr.innerHTML="<td>"+n+"</td><td><input class='r' type='number' step='any' inputmode='decimal' aria-label='Reference load "+n+"'></td><td><input class='t' type='number' step='any' inputmode='decimal' aria-label='Tester reading "+n+"'></td><td class='e'></td><td class='pe'></td><td class='res'></td>";
+  $("rows").appendChild(tr);}if(n>=40)$("add").style.display="none";}
+function calc(){var u=$("unit").value,tol=num($("tol").value),cnt=0,p=0,fl=0,mx=null;
+  $("rows").querySelectorAll("tr").forEach(function(tr){var r=num(tr.querySelector(".r").value),t=num(tr.querySelector(".t").value),
+    e=tr.querySelector(".e"),pe=tr.querySelector(".pe"),rs=tr.querySelector(".res");rs.className="res";
+    if(r===null||t===null||r===0){e.textContent=pe.textContent=rs.textContent="";return;}
+    var er=t-r,pc=er/r*100;cnt++;if(mx===null||Math.abs(pc)>mx)mx=Math.abs(pc);
+    e.textContent=(er>0?"+":"")+f(er,3)+" "+u;pe.textContent=(pc>0?"+":"")+f(pc,2)+" %";
+    if(tol===null){rs.textContent="";return;}
+    var ok=Math.abs(pc)<=tol+1e-9;if(ok)p++;else fl++;rs.textContent=ok?"PASS":"FAIL";rs.classList.add(ok?"PASS":"FAIL");});
+  $("s-n").textContent=cnt||"–";
+  $("s-pf").textContent=(cnt&&tol!==null)?p+" / "+fl:"–";
+  $("s-max").textContent=mx===null?"–":f(mx,2)+" %";
+  var s=$("s-res");s.className="res";
+  if(cnt&&tol!==null){s.textContent=fl?"FAIL":"PASS";s.classList.add(fl?"FAIL":"PASS");}else s.textContent="–";}
+add(10);$("add").addEventListener("click",function(){add(5);calc();});
+document.addEventListener("input",calc);document.addEventListener("change",calc);calc();
+})();
+</script>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fqa%2Ftester-accuracy-check%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
