@@ -75,7 +75,7 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 <article class="prose">
 <p class="meta noprint">Free tool · no sign-up · runs in your browser</p>
 <h1>Displacement Under Load Check: Movement During the Hold</h1>
-<p class="lead noprint">Holding a proof load on an anchor or fixing and reading a dial gauge or LVDT? Type the time and displacement at each reading: you get the movement since the start of the hold and the total displacement, with PASS/FAIL against the limits your specification sets. Print it with the test record.</p>
+<p class="lead noprint">During a proof-load hold on an anchor or fixing, a dial gauge or LVDT is read at set times. Type the time and displacement at each reading: you get the movement since the start of the hold and the total displacement, with PASS/FAIL against the limits your specification sets. Print it with the test record.</p>
 
 <h2>Test details</h2>
 <div class="grid">
@@ -107,7 +107,7 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 <div class="noprint">
 <h2>How it works</h2>
 <p>The first row with both a time and a displacement is the start of the hold. For every later reading the tool shows the movement since that first reading and the change from the previous reading. Movement during the hold is the last reading minus the first; total displacement is the last reading as entered, so zero the gauge before loading if your limit is on total displacement. Each result is PASS when the value is no more than its limit; the overall result is PASS only when every limit you entered passes. Check: readings 1.20, 1.26 and 1.31 mm at 0, 2 and 5 min give 0.11 mm movement during the hold, which is FAIL at 0.10 mm and PASS at 0.15 mm.</p>
-<p>The tool does not choose the held load, the hold time, the reading times or the limits, and it does not judge whether movement is slowing. Record the load and result for each anchor on the <a href="../pull-test-record-sheet/">pull-test record sheet</a>; the proof load itself comes from the <a href="../proof-test-sample-size/">proof-test sample size and proof load calculator</a>, and the time to reach it from the <a href="../load-rate-calculator/">load rate calculator</a>.</p>
+<p>The tool does not choose the held load, the hold time, the reading times or the limits, and it does not judge whether movement is slowing. Record the load and result for each anchor on the <a href="../pull-test-record-sheet/">pull-test record sheet</a>; the proof load is the factor from your spec times the working load, which the <a href="../proof-test-sample-size/">proof-test sample size and proof load calculator</a> multiplies out, and the time to reach it from the <a href="../load-rate-calculator/">load rate calculator</a>.</p>
 </div>
 
 <div class="buy noprint">
