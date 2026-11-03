@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Load Cell mV/V to Load Calculator (kN, lbf) | QTS</title>
+<meta name="description" content="Turn a load cell's mV signal into load from its capacity, rated output (mV/V) and excitation, with zero offset and expected signal at any load. Free.">
+<link rel="canonical" href="https://calyx-ai.net/qa/load-cell-mv-v-to-load/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Load cell mV/V to load calculator">
+<meta property="og:description" content="Signal in mV to load from capacity, rated output and excitation; expected mV at any load; % of capacity. Free, in your browser.">
+<meta property="og:url" content="https://calyx-ai.net/qa/load-cell-mv-v-to-load/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "WebApplication", "name": "Load Cell mV/V to Load Calculator", "url": "https://calyx-ai.net/qa/load-cell-mv-v-to-load/", "applicationCategory": "BusinessApplication", "operatingSystem": "Any (web browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Converts a strain-gauge load cell signal (mV) to load from capacity, rated output (mV/V), excitation (V) and zero offset, and gives the expected signal at a target load.", "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:1000px;margin:0 auto;padding:40px 0 24px}
+.prose{max-width:760px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem;font-family:inherit}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{color:var(--muted);font-weight:500}
+input,select{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px 16px}
+.grid label{display:block;font-size:.85rem;color:var(--muted)}
+.sheet{overflow-x:auto}
+.res{font-weight:700;text-align:center}.PASS{color:var(--ok)}.FAIL{color:var(--accent-2)}
+.summary td:first-child{color:var(--muted);width:40%}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.printnote,.printonly{display:none}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media print{
+  @page{size:Letter landscape;margin:10mm}
+  body{background:#fff;color:#000;font-family:Arial,sans-serif;font-size:9.5pt;line-height:1.3}
+  header,footer,.noprint,.buy{display:none!important}
+  article{padding:0;max-width:none}h1{font-size:15pt;margin:0 0 6pt;color:#000}h2{font-size:11pt;margin:8pt 0 4pt;color:#000}
+  input,select{background:#fff;color:#000;border:0;border-bottom:1px solid #777;border-radius:0;padding:1pt 2pt;font-size:9pt;-webkit-appearance:none;appearance:none}
+  table td,table th{border:1px solid #777;padding:2pt 3pt;color:#000}
+  .sheet td input,.sheet td select{border:0}
+  .grid{grid-template-columns:repeat(4,1fr);gap:4pt 10pt}.grid label{color:#000;font-size:8pt}
+  .PASS,.FAIL,.summary td:first-child{color:#000}
+  .summary,.printnote{break-inside:avoid}
+  .printonly{display:block;font-size:15pt;font-weight:700;margin:0 0 4pt}
+  .printnote{display:block;font-size:8pt;color:#333;margin-top:6pt}
+  a{color:#000;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Quality Tester <span>Solutions</span></a>
+  <nav><a class="btn small ghost" href="../">Full Excel templates — $49</a></nav>
+</div></header>
+
+<main class="wrap">
+<article class="prose">
+<p class="meta noprint">Free tool · no sign-up · runs in your browser</p>
+<h1>Load Cell mV/V to Load Calculator</h1>
+<p class="lead noprint">Reading a load cell on a meter or data logger? Enter the cell's capacity, rated output and excitation from its calibration certificate, then type the signals: you get load and % of capacity per reading, and the signal to expect at any target load.</p>
+
+<h2>Load cell</h2>
+<div class="grid">
+  <div><label for="cell">Load cell / serial</label><input id="cell" type="text"></div>
+  <div><label for="cap">Rated capacity</label><input id="cap" type="number" step="any" min="0" inputmode="decimal"></div>
+  <div><label for="unit">Load unit</label><select id="unit"><option>kN</option><option>lbf</option><option>N</option><option>kip</option><option>kgf</option></select></div>
+  <div><label for="ro">Rated output (mV/V)</label><input id="ro" type="number" step="any" min="0" inputmode="decimal"></div>
+  <div><label for="ex">Excitation (V)</label><input id="ex" type="number" step="any" min="0" inputmode="decimal"></div>
+  <div><label for="z">Zero offset, signal at no load (mV)</label><input id="z" type="number" step="any" inputmode="decimal" value="0"></div>
+</div>
+<p class="tiny noprint">Full-scale signal: <strong id="fs">–</strong> · sensitivity: <strong id="sens">–</strong>. Nothing you type is uploaded or saved.</p>
+
+<h2>Signal to load</h2>
+<div class="sheet"><table><thead><tr><th>#</th><th>Signal (mV)</th><th>Load</th><th>% of capacity</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="cta-row noprint"><button class="btn small ghost" type="button" id="add">Add 5 rows</button><button class="btn small" type="button" onclick="window.print()">Print results</button></div>
+
+<h2>Load to expected signal</h2>
+<div class="grid">
+  <div><label for="tl">Target load</label><input id="tl" type="number" step="any" min="0" inputmode="decimal"></div>
+  <div><label>Expected signal</label><div id="tsig" class="res" style="text-align:left">–</div></div>
+  <div><label>% of capacity</label><div id="tpc" class="res" style="text-align:left">–</div></div>
+</div>
+<p class="printnote">Load = (signal − zero offset) / (rated output × excitation) × capacity. Calculated with the free tool at calyx-ai.net/qa/load-cell-mv-v-to-load/ (Quality Tester Solutions LLC).</p>
+
+<div class="noprint">
+<h2>How it works</h2>
+<p>A strain-gauge load cell's rated output (mV/V) is its signal at rated capacity for each volt of excitation, so the full-scale signal is rated output × excitation. The tool assumes a straight line through the zero offset: load = (signal − zero offset) / (rated output × excitation) × capacity, and expected signal = zero offset + load / capacity × rated output × excitation. Check: a 50 kN cell with 2 mV/V at 10 V excitation gives 20 mV full scale; 8 mV with zero offset 0 is 20 kN (40 % of capacity), and a 30 kN target gives 12 mV.</p>
+<p>A straight line is an approximation. When the calibration certificate gives its own coefficients or a load table, use those; the tool does not correct for non-linearity, hysteresis, temperature or cable effects. A reading above 100 % of capacity is flagged. To compare the load cell with a tester at several points, use the <a href="../tester-accuracy-check/">tester accuracy check</a>; for mixed units, the <a href="../force-unit-converter/">force unit converter</a>; for the calibration date, the <a href="../calibration-due-date/">calibration due-date checker</a>.</p>
+</div>
+
+<div class="buy noprint">
+  <h2>Record every pull test in the full workbook</h2>
+  <p>The <strong>Fastener &amp; Anchor Pull-Test Report Templates</strong> pack has a 40-row proof-test report with automatic PASS/FAIL, ultimate-load statistics, a calibration log, a unit converter, a printable procedure checklist and a standards index. $49 one-time, from Quality Tester Solutions LLC, the company behind <a href="https://force-test.com/">Force-Test</a> pull testers.</p>
+  <div class="cta-row" style="justify-content:center"><a class="btn" href="../?utm_source=tool&amp;utm_campaign=mv-v-load">See the full template pack</a></div>
+</div>
+</article>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · <a href="../">Pull-test report templates</a> · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>
+function $(id){return document.getElementById(id);}
+function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
+function f(x,d){return Number(x.toFixed(d)).toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});}
+var n=0;function add(k){for(var i=0;i<k&&n<40;i++){n++;var tr=document.createElement("tr");
+  tr.innerHTML="<td>"+n+"</td><td><input class='s' type='number' step='any' inputmode='decimal' aria-label='Signal "+n+"'></td><td class='l'></td><td class='p'></td>";
+  $("rows").appendChild(tr);}if(n>=40)$("add").style.display="none";}
+function calc(){var u=$("unit").value,cap=num($("cap").value),ro=num($("ro").value),ex=num($("ex").value),z=num($("z").value);if(z===null)z=0;
+  var ok=cap!==null&&ro!==null&&ex!==null&&cap>0&&ro>0&&ex>0,fs=ok?ro*ex:null;
+  $("fs").textContent=ok?f(fs,4)+" mV":"–";$("sens").textContent=ok?f(fs/cap,6)+" mV per "+u:"–";
+  $("rows").querySelectorAll("tr").forEach(function(tr){var s=num(tr.querySelector(".s").value),l=tr.querySelector(".l"),p=tr.querySelector(".p");p.className="p";
+    if(!ok||s===null){l.textContent=p.textContent="";return;}
+    var load=(s-z)/fs*cap,pc=load/cap*100;l.textContent=f(load,3)+" "+u;p.textContent=f(pc,1)+" %"+(pc>100+1e-9?" (over capacity)":"");if(pc>100+1e-9)p.classList.add("FAIL");});
+  var tl=num($("tl").value);
+  if(ok&&tl!==null){$("tsig").textContent=f(z+tl/cap*fs,4)+" mV";var tp=tl/cap*100;$("tpc").textContent=f(tp,1)+" %"+(tp>100+1e-9?" (over capacity)":"");}
+  else{$("tsig").textContent="–";$("tpc").textContent="–";}}
+(function(){add(10);$("add").addEventListener("click",function(){add(5);calc();});
+document.addEventListener("input",calc);document.addEventListener("change",calc);calc();})();
+</script>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fqa%2Fload-cell-mv-v-to-load%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>

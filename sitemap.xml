@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://calyx-ai.net/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-<url><loc>https://calyx-ai.net/blog/why-ai-coding-agent-breaks-prod/</loc><lastmod>2026-10-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://calyx-ai.net/blog/self-annealing-loop/</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://calyx-ai.net/blog/why-ai-coding-agent-breaks-prod/</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://calyx-ai.net/blog/self-annealing-loop/</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/blog/publish-gate-ai-posts/</loc><lastmod>2026-10-26</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/blog/anchor-pull-test-report/</loc><lastmod>2026-10-27</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/blog/zero-dependency-mcp-server/</loc><lastmod>2026-10-31</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://calyx-ai.net/qa/</loc><lastmod>2026-10-29</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://calyx-ai.net/qa/</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
 <url><loc>https://calyx-ai.net/qa/pull-test-record-sheet/</loc><lastmod>2026-10-29</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/qa/ultimate-load-calculator/</loc><lastmod>2026-10-29</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/qa/proof-test-sample-size/</loc><lastmod>2026-10-30</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -17,9 +17,11 @@
 <url><loc>https://calyx-ai.net/qa/pull-off-strength-calculator/</loc><lastmod>2026-10-31</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/qa/bond-stress-calculator/</loc><lastmod>2026-10-31</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/qa/bolt-tensile-stress-area/</loc><lastmod>2026-11-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://calyx-ai.net/qa/load-rate-calculator/</loc><lastmod>2026-11-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://calyx-ai.net/qa/load-rate-calculator/</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/qa/hydraulic-ram-effective-area/</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://calyx-ai.net/qa/tester-accuracy-check/</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://calyx-ai.net/qa/tester-accuracy-check/</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/qa/pressure-unit-converter/</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://calyx-ai.net/qa/stress-unit-converter/</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://calyx-ai.net/qa/load-cell-mv-v-to-load/</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://calyx-ai.net/qa/displacement-under-load-check/</loc><lastmod>2026-11-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
