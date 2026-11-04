@@ -126,7 +126,8 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 (function(){
 function $(id){return document.getElementById(id);}
 function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)&&n>0?n:null;}
-function f(x,d){return Number(x.toFixed(d)).toLocaleString("en-US",{maximumFractionDigits:d});}
+function rd(x,d){if(!isFinite(x))return x;var s=x<0?-1:1,p=String(Math.abs(x)).split("e"),r=Math.round(Number(p[0]+"e"+((+p[1]||0)+d)));if(r===0)return 0;p=String(r).split("e");return s*Number(p[0]+"e"+((+p[1]||0)-d));}
+function f(x,d){return rd(x,d).toLocaleString("en-US",{maximumFractionDigits:d});}
 var metric=true;
 function area(){var d=num($("d").value),p=num($("p").value);if(d===null||p===null)return null;
   var e=metric?d-0.9382*p:d-0.9743/p;if(e<=0)return null;var a=Math.PI/4*e*e;return metric?a:a*645.16;}

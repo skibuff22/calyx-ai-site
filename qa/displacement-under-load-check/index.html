@@ -124,7 +124,8 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 <script>
 function $(id){return document.getElementById(id);}
 function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
-function f(x,d){return Number(x.toFixed(d)).toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});}
+function rd(x,d){if(!isFinite(x))return x;var s=x<0?-1:1,p=String(Math.abs(x)).split("e"),r=Math.round(Number(p[0]+"e"+((+p[1]||0)+d)));if(r===0)return 0;p=String(r).split("e");return s*Number(p[0]+"e"+((+p[1]||0)-d));}
+function f(x,d){return rd(x,d).toLocaleString("en-US",{maximumFractionDigits:d,minimumFractionDigits:d});}
 var n=0;function add(k){for(var i=0;i<k&&n<40;i++){n++;var tr=document.createElement("tr");
   tr.innerHTML="<td>"+n+"</td><td><input class='t' type='number' step='any' min='0' inputmode='decimal' aria-label='Time "+n+"'></td><td><input class='d' type='number' step='any' inputmode='decimal' aria-label='Displacement "+n+"'></td><td class='m'></td><td class='c'></td>";
   $("rows").appendChild(tr);}if(n>=40)$("add").style.display="none";}

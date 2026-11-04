@@ -126,6 +126,7 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 var T=(function(){
 function $(id){return document.getElementById(id);}
 function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
+function rd(x,d){if(!isFinite(x))return x;var s=x<0?-1:1,p=String(Math.abs(x)).split("e"),r=Math.round(Number(p[0]+"e"+((+p[1]||0)+d)));if(r===0)return 0;p=String(r).split("e");return s*Number(p[0]+"e"+((+p[1]||0)-d));}
 function mmss(s){s=Math.floor(s+1e-6);var m=Math.floor(s/60),r=s%60;return (m<10?"0":"")+m+":"+(r<10?"0":"")+r;}
 var running=false,acc=0,t0=0,started=false,done=false,nextIdx=0,rows=0,ac=null,lock=null;
 function H(){var m=num($("hm").value)||0,s=num($("hs").value)||0;return Math.max(0,Math.round(m*60+s));}
@@ -137,7 +138,7 @@ function beep(n,len){if($("snd").value!=="1")return;try{if(!ac)ac=new (window.Au
   o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(0.25,st);o.start(st);o.stop(st+len);}}catch(e){}
   try{if(navigator.vibrate)navigator.vibrate(n>1?[300,120,300,120,300]:200);}catch(e){}}
 function addRow(t,note){rows++;var tr=document.createElement("tr");
-  tr.innerHTML="<td>"+rows+"</td><td class='tm'>"+(t/60).toFixed(2)+"</td><td>"+mmss(t)+"</td><td><input class='d' type='number' step='any' inputmode='decimal' aria-label='Displacement "+rows+"'></td><td><input class='n' type='text' aria-label='Note "+rows+"'></td>";
+  tr.innerHTML="<td>"+rows+"</td><td class='tm'>"+rd(t/60,2).toFixed(2)+"</td><td>"+mmss(t)+"</td><td><input class='d' type='number' step='any' inputmode='decimal' aria-label='Displacement "+rows+"'></td><td><input class='n' type='text' aria-label='Note "+rows+"'></td>";
   tr.querySelector(".n").value=note||"";$("rows").appendChild(tr);}
 function keepAwake(on){try{if(on&&navigator.wakeLock&&!lock){navigator.wakeLock.request("screen").then(function(l){lock=l;$("wl").textContent="screen kept on";}).catch(function(){$("wl").textContent="keep the screen on manually";});}
   else if(!on&&lock){lock.release();lock=null;$("wl").textContent="";} else if(on&&!navigator.wakeLock)$("wl").textContent="keep the screen on manually";}catch(e){}}

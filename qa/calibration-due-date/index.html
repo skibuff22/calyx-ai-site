@@ -108,7 +108,8 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 (function(){
 function $(i){return document.getElementById(i);}
 function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
-function fmt(x,d){d=(d===undefined)?3:d;return isFinite(x)?(Math.round(x*Math.pow(10,d))/Math.pow(10,d)).toString():"";}
+function rd(x,d){if(!isFinite(x))return x;var s=x<0?-1:1,p=String(Math.abs(x)).split("e"),r=Math.round(Number(p[0]+"e"+((+p[1]||0)+d)));if(r===0)return 0;p=String(r).split("e");return s*Number(p[0]+"e"+((+p[1]||0)-d));}
+function fmt(x,d){d=(d===undefined)?3:d;return isFinite(x)?(rd(x,d)).toString():"";}
 var tb=$("cal"),N=0;
 function iso(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
 function edate(s,m){var p=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s);if(!p)return null;

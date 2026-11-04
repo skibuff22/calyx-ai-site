@@ -158,7 +158,8 @@ function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return 
 function addRows(k){for(var i=0;i<k&&tb.rows.length<MAX;i++){var r=tb.insertRow(),n=tb.rows.length;
   r.innerHTML='<td>'+n+'</td><td><input aria-label="Fastener ID row '+n+'"></td><td><input class="ld" type="number" step="any" inputmode="decimal" aria-label="Load row '+n+'"></td><td><input class="hd" type="number" step="any" inputmode="decimal" aria-label="Hold row '+n+'"></td><td><input class="dp" type="number" step="any" inputmode="decimal" aria-label="Displacement row '+n+'"></td><td><select class="md" aria-label="Failure mode row '+n+'">'+MODES.map(function(m){return "<option>"+m+"</option>";}).join("")+'</select></td><td class="res"></td><td><input aria-label="Notes row '+n+'"></td>';}
   document.getElementById("addrow").style.display=tb.rows.length>=MAX?"none":"";}
-function fmt(x){return (Math.round(x*1000)/1000).toString();}
+function rd(x,d){if(!isFinite(x))return x;var s=x<0?-1:1,p=String(Math.abs(x)).split("e"),r=Math.round(Number(p[0]+"e"+((+p[1]||0)+d)));if(r===0)return 0;p=String(r).split("e");return s*Number(p[0]+"e"+((+p[1]||0)-d));}
+function fmt(x){return (rd(x,3)).toString();}
 function calc(){
   var u=document.getElementById("unit").value,du=document.getElementById("dunit").value;
   document.querySelectorAll(".u").forEach(function(e){e.textContent=u;});document.querySelectorAll(".du").forEach(function(e){e.textContent=du;});

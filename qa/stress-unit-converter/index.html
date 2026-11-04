@@ -111,7 +111,8 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 <script>
 (function(){
 function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
-function fmt(x,d){return isFinite(x)?(Math.round(x*Math.pow(10,d))/Math.pow(10,d)).toString():"";}
+function rd(x,d){if(!isFinite(x))return x;var s=x<0?-1:1,p=String(Math.abs(x)).split("e"),r=Math.round(Number(p[0]+"e"+((+p[1]||0)+d)));if(r===0)return 0;p=String(r).split("e");return s*Number(p[0]+"e"+((+p[1]||0)-d));}
+function fmt(x,d){return isFinite(x)?(rd(x,d)).toString():"";}
 document.addEventListener("input",function(e){var src=e.target;if(!src.hasAttribute("data-t"))return;
   var f=Number(src.getAttribute("data-t")),v=num(src.value);
   document.querySelectorAll("input[data-t]").forEach(function(el){if(el===src)return;

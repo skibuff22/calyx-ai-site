@@ -124,7 +124,8 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 var LBF=4.4482216152605,PSI=6894.757293168361;
 function $(i){return document.getElementById(i);}
 function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
-function fmt(x,d){return isFinite(x)?(Math.round(x*Math.pow(10,d))/Math.pow(10,d)).toLocaleString("en-US",{maximumFractionDigits:d}):"";}
+function rd(x,d){if(!isFinite(x))return x;var s=x<0?-1:1,p=String(Math.abs(x)).split("e"),r=Math.round(Number(p[0]+"e"+((+p[1]||0)+d)));if(r===0)return 0;p=String(r).split("e");return s*Number(p[0]+"e"+((+p[1]||0)-d));}
+function fmt(x,d){return isFinite(x)?(rd(x,d)).toLocaleString("en-US",{maximumFractionDigits:d}):"";}
 function upd(){
   var d=num($("d").value),h=num($("h").value),lu=Number($("lunit").value);
   var A=(d===null||h===null||d<=0||h<=0)?null:Math.PI*d*lu*h*lu;

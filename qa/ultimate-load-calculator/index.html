@@ -125,7 +125,8 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 (function(){
 function $(i){return document.getElementById(i);}
 function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
-function fmt(x,d){return isFinite(x)?(Math.round(x*Math.pow(10,d||3))/Math.pow(10,d||3)).toString():"";}
+function rd(x,d){if(!isFinite(x))return x;var s=x<0?-1:1,p=String(Math.abs(x)).split("e"),r=Math.round(Number(p[0]+"e"+((+p[1]||0)+d)));if(r===0)return 0;p=String(r).split("e");return s*Number(p[0]+"e"+((+p[1]||0)-d));}
+function fmt(x,d){return isFinite(x)?(rd(x,d||3)).toString():"";}
 function calc(){
   var u=$("unit").value,k=num($("k").value),dl=num($("design").value),bad=[],xs=[];
   $("loads").value.split(/[\s,;]+/).forEach(function(t){if(!t)return;var n=Number(t);if(isFinite(n))xs.push(n);else bad.push(t);});

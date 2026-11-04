@@ -125,7 +125,8 @@ footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid va
 var LBF=4.4482216152605;
 function $(id){return document.getElementById(id);}
 function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
-function f(x,d){return Number(x.toFixed(d)).toLocaleString("en-US",{maximumFractionDigits:d});}
+function rd(x,d){if(!isFinite(x))return x;var s=x<0?-1:1,p=String(Math.abs(x)).split("e"),r=Math.round(Number(p[0]+"e"+((+p[1]||0)+d)));if(r===0)return 0;p=String(r).split("e");return s*Number(p[0]+"e"+((+p[1]||0)-d));}
+function f(x,d){return rd(x,d).toLocaleString("en-US",{maximumFractionDigits:d});}
 function hms(s){var m=Math.floor(s/60),r=s-60*m;return m+" min "+f(r,1)+" s";}
 function other(perMin,u){return u==="kN"?f(perMin*1000/LBF,0)+" lbf/min = "+f(perMin/60,4)+" kN/s":f(perMin*LBF/1000,3)+" kN/min = "+f(perMin/60,2)+" lbf/s";}
 function calc(){var u=$("unit").value,l0=num($("l0").value)||0,l1=num($("l1").value),r=num($("rate").value),per=Number($("per").value),n=Math.round(num($("steps").value)||5);
