@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proof-Load Hold Timer with Reading Prompts | QTS</title>
+<meta name="description" content="Countdown timer for the proof-load hold: beeps at each displacement reading and at the end, logs reading times, prints the log. Free, in your browser.">
+<link rel="canonical" href="https://calyx-ai.net/qa/proof-load-hold-timer/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Proof-load hold timer">
+<meta property="og:description" content="Counts down the hold, beeps at each reading time and at the end, and builds a printable reading log. Free.">
+<meta property="og:url" content="https://calyx-ai.net/qa/proof-load-hold-timer/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "WebApplication", "name": "Proof-Load Hold Timer", "url": "https://calyx-ai.net/qa/proof-load-hold-timer/", "applicationCategory": "BusinessApplication", "operatingSystem": "Any (web browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Countdown timer for the hold period of a proof-load test: user-set hold time and reading interval, a beep at each reading and at the end, a row per reading for the displacement value, printable log.", "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:1000px;margin:0 auto;padding:40px 0 24px}
+.prose{max-width:760px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem;font-family:inherit}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{color:var(--muted);font-weight:500}
+input,select{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px 16px}
+.grid label{display:block;font-size:.85rem;color:var(--muted)}
+.sheet{overflow-x:auto}
+.res{font-weight:700;text-align:center}.PASS{color:var(--ok)}.FAIL{color:var(--accent-2)}
+.summary td:first-child{color:var(--muted);width:40%}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.printnote,.printonly{display:none}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media print{
+  @page{size:Letter landscape;margin:10mm}
+  body{background:#fff;color:#000;font-family:Arial,sans-serif;font-size:9.5pt;line-height:1.3}
+  header,footer,.noprint,.buy{display:none!important}
+  article{padding:0;max-width:none}h1{font-size:15pt;margin:0 0 6pt;color:#000}h2{font-size:11pt;margin:8pt 0 4pt;color:#000}
+  input,select{background:#fff;color:#000;border:0;border-bottom:1px solid #777;border-radius:0;padding:1pt 2pt;font-size:9pt;-webkit-appearance:none;appearance:none}
+  table td,table th{border:1px solid #777;padding:2pt 3pt;color:#000}
+  .sheet td input,.sheet td select{border:0}
+  .grid{grid-template-columns:repeat(4,1fr);gap:4pt 10pt}.grid label{color:#000;font-size:8pt}
+  .PASS,.FAIL,.summary td:first-child{color:#000}
+  .summary,.printnote{break-inside:avoid}
+  .printonly{display:block;font-size:15pt;font-weight:700;margin:0 0 4pt}
+  .printnote{display:block;font-size:8pt;color:#333;margin-top:6pt}
+  a{color:#000;text-decoration:none}
+}
+.clock{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:clamp(3rem,14vw,6rem);font-weight:500;line-height:1.1;margin:.2em 0 0}
+.clock.done{color:var(--ok)}.status{font-weight:600;min-height:1.7em}
+.big{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.big .btn{min-width:120px}
+@media print{.clock{font-size:14pt}.big{display:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Quality Tester <span>Solutions</span></a>
+  <nav><a class="btn small ghost" href="../">Full Excel templates — $49</a></nav>
+</div></header>
+
+<main class="wrap">
+<article class="prose">
+<p class="meta noprint">Free tool · no sign-up · runs in your browser</p>
+<h1>Proof-Load Hold Timer</h1>
+<p class="lead noprint">Set the hold time from your spec and how often to read the displacement gauge. Start it when the proof load is reached: it counts down, beeps at each reading time and at the end of the hold, and adds a row for each reading so you only type the gauge value. Print the log or carry the readings to the displacement check.</p>
+
+<h2>Hold settings</h2>
+<div class="grid">
+  <div><label for="loc">Anchor / location</label><input id="loc" type="text"></div>
+  <div><label for="ld">Held load (with unit)</label><input id="ld" type="text"></div>
+  <div><label for="hm">Hold time, minutes</label><input id="hm" type="number" step="1" min="0" inputmode="numeric" value="2"></div>
+  <div><label for="hs">Hold time, seconds</label><input id="hs" type="number" step="1" min="0" max="59" inputmode="numeric" value="0"></div>
+  <div><label for="iv">Reading every (seconds, 0 = none)</label><input id="iv" type="number" step="1" min="0" inputmode="numeric" value="30"></div>
+  <div><label for="snd">Sound</label><select id="snd"><option value="1">On</option><option value="0">Off</option></select></div>
+</div>
+
+<div class="clock" id="clock" aria-live="off">02:00</div>
+<p class="status" id="status" aria-live="polite">Ready. Start when the proof load is reached.</p>
+<p class="tiny">Elapsed: <strong id="el">00:00</strong> · next reading in: <strong id="nx">–</strong> · <span id="wl"></span></p>
+<div class="big noprint">
+  <button class="btn" type="button" id="start">Start</button>
+  <button class="btn ghost" type="button" id="log">Log reading now</button>
+  <button class="btn ghost" type="button" id="reset">Reset</button>
+</div>
+
+<h2>Readings</h2>
+<div class="sheet"><table><thead><tr><th>#</th><th>Time (min)</th><th>Time (mm:ss)</th><th>Displacement</th><th>Note</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="cta-row noprint"><button class="btn small" type="button" onclick="window.print()">Print log</button></div>
+<p class="printnote">Tested by: ____________________ Date: __________ · Hold timed with the free tool at calyx-ai.net/qa/proof-load-hold-timer/ (Quality Tester Solutions LLC).</p>
+
+<div class="noprint">
+<h2>How it works</h2>
+<p>The clock counts from the moment you press Start, using the device clock, so a slow screen refresh never makes it drift. A row is added at 0:00 and at every reading time (30 s, 60 s, … with a 30-second interval) up to the end of the hold, which also gets a row; "Log reading now" adds a row at the current time, for example when the load drops and you re-pump. Pause stops the clock and the reading prompts; Reset clears the clock and the rows. After the hold time is reached the clock keeps counting the overrun.</p>
+<p>Keep this tab in front while timing: phones and browsers slow down or silence background tabs, so a beep can come late even though the times in the log stay correct. Where the browser supports it, the page asks to keep the screen on while the timer runs. The hold time, reading times and the displacement limit come from your spec or the anchor manufacturer; the tool does not choose them. To check the readings against a limit, enter them in the <a href="../displacement-under-load-check/">displacement under load check</a>; for mm and inches, the <a href="../displacement-unit-converter/">displacement unit converter</a>; for the full record of the test, the <a href="../pull-test-record-sheet/">pull-test record sheet</a>.</p>
+</div>
+
+<div class="buy noprint">
+  <h2>Record every pull test in the full workbook</h2>
+  <p>The <strong>Fastener &amp; Anchor Pull-Test Report Templates</strong> pack has a 40-row proof-test report with automatic PASS/FAIL, ultimate-load statistics, a calibration log, a unit converter, a printable procedure checklist and a standards index. $49 one-time, from Quality Tester Solutions LLC, the company behind <a href="https://force-test.com/">Force-Test</a> pull testers.</p>
+  <div class="cta-row" style="justify-content:center"><a class="btn" href="../?utm_source=tool&amp;utm_campaign=hold-timer">See the full template pack</a></div>
+</div>
+</article>
+</main>
+
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · <a href="../">Pull-test report templates</a> · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>
+var T=(function(){
+function $(id){return document.getElementById(id);}
+function num(v){v=String(v).trim();if(v==="")return null;var n=Number(v);return isFinite(n)?n:null;}
+function mmss(s){s=Math.floor(s+1e-6);var m=Math.floor(s/60),r=s%60;return (m<10?"0":"")+m+":"+(r<10?"0":"")+r;}
+var running=false,acc=0,t0=0,started=false,done=false,nextIdx=0,rows=0,ac=null,lock=null;
+function H(){var m=num($("hm").value)||0,s=num($("hs").value)||0;return Math.max(0,Math.round(m*60+s));}
+function I(){var v=num($("iv").value)||0;return v>0?Math.round(v):0;}
+function elapsed(){return (acc+(running?Date.now()-t0:0))/1000;}
+function schedule(){var h=H(),iv=I(),t=[0];if(iv>0)for(var k=iv;k<h;k+=iv)t.push(k);if(h>0)t.push(h);return t;}
+function beep(n,len){if($("snd").value!=="1")return;try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();
+  for(var i=0;i<n;i++){var o=ac.createOscillator(),g=ac.createGain(),st=ac.currentTime+i*(len+0.12);o.frequency.value=n>1?1320:880;
+  o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(0.25,st);o.start(st);o.stop(st+len);}}catch(e){}
+  try{if(navigator.vibrate)navigator.vibrate(n>1?[300,120,300,120,300]:200);}catch(e){}}
+function addRow(t,note){rows++;var tr=document.createElement("tr");
+  tr.innerHTML="<td>"+rows+"</td><td class='tm'>"+(t/60).toFixed(2)+"</td><td>"+mmss(t)+"</td><td><input class='d' type='number' step='any' inputmode='decimal' aria-label='Displacement "+rows+"'></td><td><input class='n' type='text' aria-label='Note "+rows+"'></td>";
+  tr.querySelector(".n").value=note||"";$("rows").appendChild(tr);}
+function keepAwake(on){try{if(on&&navigator.wakeLock&&!lock){navigator.wakeLock.request("screen").then(function(l){lock=l;$("wl").textContent="screen kept on";}).catch(function(){$("wl").textContent="keep the screen on manually";});}
+  else if(!on&&lock){lock.release();lock=null;$("wl").textContent="";} else if(on&&!navigator.wakeLock)$("wl").textContent="keep the screen on manually";}catch(e){}}
+function tick(){var e=elapsed(),h=H(),iv=I(),sch=schedule();
+  while(started&&nextIdx<sch.length&&e+1e-6>=sch[nextIdx]){var t=sch[nextIdx],last=nextIdx===sch.length-1;
+    addRow(t,t===0?"start of hold":(last?"end of hold":""));if(t>0){if(last)beep(3,0.35);else beep(1,0.18);}nextIdx++;}
+  if(started&&!done&&h>0&&e+1e-6>=h){done=true;}
+  var rem=Math.max(0,h-e);$("clock").textContent=done?"+"+mmss(e-h):mmss(Math.ceil(rem-1e-6));$("clock").className="clock"+(done?" done":"");
+  $("el").textContent=mmss(e);
+  var nx="–";if(started&&!done&&nextIdx<sch.length)nx=mmss(Math.ceil(sch[nextIdx]-e-1e-6));$("nx").textContent=nx;
+  $("status").textContent=!started?"Ready. Start when the proof load is reached.":done?"Hold time reached ("+mmss(h)+"). Overrun shown above.":running?"Holding: "+mmss(Math.ceil(rem-1e-6))+" to go.":"Paused at "+mmss(e)+".";
+  $("start").textContent=running?"Pause":(started?"Resume":"Start");
+  ["hm","hs","iv"].forEach(function(id){$(id).disabled=started;});}
+function start(){if(running){acc+=Date.now()-t0;running=false;keepAwake(false);}
+  else{if(H()<=0){$("status").textContent="Enter a hold time first.";return;}
+    if(!ac&&$("snd").value==="1"){try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+    t0=Date.now();running=true;started=true;keepAwake(true);}tick();}
+function reset(){running=false;acc=0;started=false;done=false;nextIdx=0;rows=0;$("rows").innerHTML="";keepAwake(false);tick();}
+function lognow(){if(!started)return;addRow(elapsed(),"");}
+$("start").addEventListener("click",start);$("reset").addEventListener("click",reset);$("log").addEventListener("click",lognow);
+document.addEventListener("input",function(e){if(["hm","hs","iv"].indexOf(e.target.id)>=0)tick();});
+setInterval(tick,200);tick();
+return {schedule:schedule,elapsed:elapsed};
+})();
+</script>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fqa%2Fproof-load-hold-timer%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
