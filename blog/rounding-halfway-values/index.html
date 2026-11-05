@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Math.round(x*100)/100 Rounds 1.005 to 1: Fixing Halfway Rounding | Calyx AI</title>
+<meta name="description" content="A unit table said 1/16 in = 1.587 mm. The exact value is 1.5875, so it should say 1.588. Why floats round halfway values down, and the fix.">
+<link rel="canonical" href="https://calyx-ai.net/blog/rounding-halfway-values/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Math.round(x * 100) / 100 rounds 1.005 to 1: the rounding bug in our unit tables">
+<meta property="og:description" content="A unit table said 1/16 in = 1.587 mm. The exact value is 1.5875, so it should say 1.588. Why floats round halfway values down, and the fix.">
+<meta property="og:url" content="https://calyx-ai.net/blog/rounding-halfway-values/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "Math.round(x * 100) / 100 rounds 1.005 to 1: the rounding bug in our unit tables", "description": "A unit table said 1/16 in = 1.587 mm. The exact value is 1.5875, so it should say 1.588. Why floats round halfway values down, and the fix.", "datePublished": "2026-11-05", "dateModified": "2026-11-05", "mainEntityOfPage": "https://calyx-ai.net/blog/rounding-halfway-values/", "author": {"@type": "Organization", "name": "Calyx AI"}, "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+pre{background:#0b0d11;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#d7dae0;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:720px;margin:0 auto;padding:40px 0 24px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+.math{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin:18px 0}
+.math div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.math b{display:block;font-family:"Barlow Semi Condensed";font-size:1.8rem;color:var(--accent-2)}
+table{width:100%;border-collapse:collapse;font-size:.97rem}td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:500}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media (max-width:820px){.math{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Calyx<span>AI</span></a>
+  <nav><a class="btn small" href="https://calyx-ai.net/#publish-gate">Publish Gate</a></nav>
+</div></header>
+
+<main class="wrap">
+<article>
+<p class="meta">Calyx AI · November 5, 2026 · 4 min read</p>
+<h1>Math.round(x * 100) / 100 rounds 1.005 to 1: the rounding bug in our unit tables</h1>
+<p class="lead">We build free calculators for people who pull-test anchors and fasteners. One of them converts displacement between mm and inches and prints two reference tables. On 2026-11-04 our publish gate failed the page: the 1/16 in row said 1.587 mm.</p>
+<p>1/16 in is 0.0625 in, and 1 in is exactly 25.4 mm, so the exact value is 1.5875 mm. Rounded half up to three decimals that is 1.588. The table was off by one in the last digit, on a page whose whole job is to be right about the last digit.</p>
+<h2>Where 1.587 came from</h2>
+<p>The static tables were generated in Python with an f-string:</p>
+<pre><code>&gt;&gt;&gt; f&quot;{0.0625 * 25.4:.3f}&quot;
+&#x27;1.587&#x27;
+&gt;&gt;&gt; from decimal import Decimal
+&gt;&gt;&gt; Decimal(1.5875)
+Decimal(&#x27;1.587499999999999911182158029987476766109466552734375&#x27;)</code></pre>
+<p>1.5875 has no exact binary form. The nearest double is a little below it, and formatting rounds that stored value correctly: it is below the halfway point, so it goes down. Python's own docs give the same example with <code>round(2.675, 2)</code>, which returns 2.67. <a class="tiny" href="https://docs.python.org/3/library/functions.html#round">[source]</a></p>
+<p>The fix for the tables was to stop using floats for them: build each value as a <code>Decimal</code> from strings and round with <code>ROUND_HALF_UP</code>.</p>
+<pre><code>from decimal import Decimal as D, ROUND_HALF_UP
+f&quot;{(D(&#x27;0.0625&#x27;) * D(&#x27;25.4&#x27;)).quantize(D(&#x27;0.001&#x27;), ROUND_HALF_UP)}&quot;   # &#x27;1.588&#x27;</code></pre>
+<h2>The same class in the browser</h2>
+<p>The live calculators round in JavaScript, so we checked those next. They used the two common idioms, and both have the same problem:</p>
+<pre><code>Math.round(1.005 * 100) / 100   // 1, not 1.01
+1.005 * 100                     // 100.49999999999999
+(1.005).toFixed(2)              // &quot;1.00&quot;
+(2.55).toFixed(1)               // &quot;2.5&quot;</code></pre>
+<p><code>1.005 * 100</code> lands just below 100.5, so <code>Math.round</code> goes down. <code>toFixed</code> rounds the stored binary value, which for 1.005 and 2.55 is just below the halfway point; MDN documents the 2.55 case. <a class="tiny" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed">[source]</a></p>
+<p>There is a second, smaller trap: <code>Math.round</code> rounds halves toward positive infinity, so <code>Math.round(-2.5)</code> is -2, not -3, and <code>Math.round(-0.4)</code> returns -0. <a class="tiny" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round">[source]</a></p>
+<p>All 19 calculator pages we had at the time rounded with <code>Math.round(x * 10^d) / 10^d</code> or <code>toFixed</code>.</p>
+<h2>The fix: round the decimal string, not the binary value</h2>
+<p>JavaScript prints a number using the shortest decimal string that maps back to the same double. For the double nearest 1.005 that string is <code>"1.005"</code>. If you shift the decimal point by editing the exponent in that string, instead of multiplying, the number you round is the one you see:</p>
+<pre><code>function rd(x, d) {
+  if (!isFinite(x)) return x;
+  var s = x &lt; 0 ? -1 : 1, p = String(Math.abs(x)).split(&quot;e&quot;);
+  var r = Math.round(Number(p[0] + &quot;e&quot; + ((+p[1] || 0) + d)));
+  if (r === 0) return 0;
+  p = String(r).split(&quot;e&quot;);
+  return s * Number(p[0] + &quot;e&quot; + ((+p[1] || 0) - d));
+}
+
+rd(1.005, 2)    // 1.01
+rd(-1.005, 2)   // -1.01   (half away from zero, like ROUND_HALF_UP)
+rd(-2.5, 0)     // -3
+rd(-0.004, 2)   // 0, not -0</code></pre>
+<p><code>Number("1.005e2")</code> is exactly 100.5, so <code>Math.round</code> sees the true halfway value. The sign is handled separately, which gives half away from zero for negatives and matches Python's <code>ROUND_HALF_UP</code> on the table side. Exponents in the string (<code>1e-7</code>) are handled by adding to the existing exponent. The result goes to <code>toLocaleString</code> for display; the calculation itself keeps full precision.</p>
+<h2>Making it stay fixed</h2>
+<p>A fix that depends on everyone remembering it does not last, so the repo now has two tests:</p>
+<ul><li>A lint test that reads every calculator page and fails on <code>Math.round(x * 10...)</code> / <code>Math.round(x * Math.pow(10, d))</code> or a bare <code>.toFixed(</code> (one on a value <code>rd</code> already rounded is allowed). It flagged all 19 old pages before the change and none after.</li><li>A headless-browser check that loads each live page, pulls out the <code>rd</code> that page actually ships, and runs 14 fixed cases through it (1.005, 1.5875, 0.0625 * 25.4, 2.675, -1.005, 1e-7, 0.1 + 0.2 and others), plus one check in the displacement converter's UI. It ran 267 checks when we made the change and 295 now, after two more pages, all passing.</li></ul>
+<p>We also rechecked the 245 static table cells on six pages against exact <code>Decimal</code> values after the 1/16 in fix: none were wrong.</p>
+<h2>What it does not fix</h2>
+<p><code>rd</code> rounds the number it is given. If the arithmetic before it already drifted, <code>rd</code> rounds the drifted value: in our stress converter, 0.00100005 ksi to psi computes 1.0000499999999999, not 1.00005, so <code>rd</code> shows 1. We left that case out of the test on purpose and wrote down why. It fixes halfway rounding, not every floating-point error. For values that must be exact (prices, published tables), compute in decimal from the start.</p>
+<h2>The part we did not expect</h2>
+<p>The bug was not found by a unit test. It was found because the page went through our publish gate, which checks each claim and number in a draft against a facts file before it goes live, and the gate's claim-by-claim check flagged the row. A generalized version of that gate is the <a href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=rounding#publish-gate">Publish Gate</a> we sell ($19 one-time). A free claim-check skill for Claude Code, <code>/verify-claims</code>, is in our MIT-licensed <a href="https://github.com/skibuff22/agent-ops-kit-lite">agent-ops-kit-lite</a> repo. The calculators, including the fixed <a href="https://calyx-ai.net/qa/displacement-unit-converter/">displacement unit converter</a>, are free at <a href="https://calyx-ai.net/qa/">calyx-ai.net/qa</a>.</p>
+
+<div class="buy">
+  <h2>Want the whole gate?</h2>
+  <p>The free lite kit has the <code>/verify-claims</code> skill. <strong>Publish Gate v1</strong> adds style and voice checks, an LLM claim-by-claim check that fails closed, a SHA-256 lock, and publishers that refuse a draft that changed after it passed. $19 one-time, or $29 bundled with the Agent Ops Kit.</p>
+  <div class="cta-row">
+    <a class="btn" href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=rounding#publish-gate">See Publish Gate</a>
+    <a class="btn ghost" href="https://github.com/skibuff22/agent-ops-kit-lite">Get the free lite kit</a>
+  </div>
+</div>
+<p class="tiny"><em>Written by Calyx AI, a product line of Quality Tester Solutions LLC. Drafted with AI assistance and checked by the gate it describes; the code and the numbers are from our own repo and were run on Node v26.7.0 and Python 3.14.8.</em></p>
+</article>
+</main>
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · Calyx AI · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fblog%2Frounding-halfway-values%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
