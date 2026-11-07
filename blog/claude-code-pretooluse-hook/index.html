@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Claude Code PreToolUse Hook That Blocks pip install | Calyx AI</title>
+<meta name="description" content="A 35-line PreToolUse hook that stops a coding agent installing packages outside requirements.txt, the exit-code contract it uses, and the case it misses.">
+<link rel="canonical" href="https://calyx-ai.net/blog/claude-code-pretooluse-hook/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A Claude Code hook that blocks pip install requests and tells the agent why">
+<meta property="og:description" content="A 35-line PreToolUse hook that stops a coding agent installing packages outside requirements.txt, the exit-code contract it uses, and the case it misses.">
+<meta property="og:url" content="https://calyx-ai.net/blog/claude-code-pretooluse-hook/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "A Claude Code hook that blocks pip install requests and tells the agent why", "description": "A 35-line PreToolUse hook that stops a coding agent installing packages outside requirements.txt, the exit-code contract it uses, and the case it misses.", "datePublished": "2026-11-07", "dateModified": "2026-11-07", "mainEntityOfPage": "https://calyx-ai.net/blog/claude-code-pretooluse-hook/", "author": {"@type": "Organization", "name": "Calyx AI"}, "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+pre{background:#0b0d11;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#d7dae0;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:720px;margin:0 auto;padding:40px 0 24px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+.math{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin:18px 0}
+.math div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.math b{display:block;font-family:"Barlow Semi Condensed";font-size:1.8rem;color:var(--accent-2)}
+table{width:100%;border-collapse:collapse;font-size:.97rem}td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:500}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media (max-width:820px){.math{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Calyx<span>AI</span></a>
+  <nav><a class="btn small" href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=pretooluse-hook#inside">Agent Ops Kit</a></nav>
+</div></header>
+
+<main class="wrap">
+<article>
+<p class="meta">Calyx AI · November 7, 2026 · 5 min read</p>
+<h1>A Claude Code hook that blocks <code>pip install requests</code> and tells the agent why</h1>
+<p class="lead">A coding agent that hits <code>ModuleNotFoundError</code> can run <code>pip install requests</code> and carry on. The script works on that machine. The package never reaches requirements.txt, so CI or the next server breaks on the same import.</p>
+<p>A rule in CLAUDE.md asking the agent not to do that is a request. A PreToolUse hook is a check that runs before the command does. Below is a 35-line one, the contract it depends on, and the case where it fails.</p>
+<h2>The contract</h2>
+<p>Claude Code runs a PreToolUse hook before a tool call and sends it the call as JSON on stdin, including <code>tool_name</code> and, for Bash, <code>tool_input.command</code>. Exit code 2 blocks the call, and the hook's stderr becomes the message Claude sees. Exit 0 with nothing on stdout approves nothing; the call goes on to the normal permission flow. A hook can also print JSON with a <code>permissionDecision</code> of <code>allow</code>, which skips the prompt. <a class="tiny" href="https://code.claude.com/docs/en/hooks">[source]</a></p>
+<p>The hook below only exits 0 or 2 and prints nothing to stdout, so it cannot widen what the agent may do; your permission settings stay in charge.</p>
+<h2>The hook</h2>
+<p><code>.claude/hooks/block_pip.py</code>, standard library only:</p>
+<pre><code>#!/usr/bin/env python3
+&quot;&quot;&quot;PreToolUse hook: block `pip install &lt;pkg&gt;` that skips the requirements file.&quot;&quot;&quot;
+import json, shlex, sys
+
+ALLOWED = {&quot;-r&quot;, &quot;--requirement&quot;, &quot;-e&quot;, &quot;--editable&quot;, &quot;-c&quot;, &quot;--constraint&quot;}
+
+def reason(command: str) -&gt; str | None:
+    try:
+        tokens = shlex.split(command)
+    except ValueError:
+        tokens = command.split()
+    if tokens[:3] in ([&quot;python&quot;, &quot;-m&quot;, &quot;pip&quot;], [&quot;python3&quot;, &quot;-m&quot;, &quot;pip&quot;]):
+        tokens = tokens[2:]
+    if tokens[:2] not in ([&quot;pip&quot;, &quot;install&quot;], [&quot;pip3&quot;, &quot;install&quot;]):
+        return None
+    args = tokens[2:]
+    if any(a in ALLOWED for a in args):
+        return None
+    pkgs = [a for a in args if not a.startswith(&quot;-&quot;)]
+    if not pkgs or all(p.startswith((&quot;.&quot;, &quot;/&quot;)) for p in pkgs):
+        return None
+    return (f&quot;`pip install {&#x27; &#x27;.join(pkgs)}` blocked: add it to requirements.txt &quot;
+            &quot;with a version pin, then run `pip install -r requirements.txt`.&quot;)
+
+def main() -&gt; int:
+    event = json.load(sys.stdin)
+    command = event.get(&quot;tool_input&quot;, {}).get(&quot;command&quot;, &quot;&quot;)
+    why = reason(command)
+    if why:
+        print(why, file=sys.stderr)  # Claude Code shows stderr to the model
+        return 2                     # exit 2 = block this tool call
+    return 0                         # exit 0 = normal permission flow
+
+if __name__ == &quot;__main__&quot;:
+    sys.exit(main())</code></pre>
+<p>The message is written for the agent, not for you. It says what was blocked and what to do instead, so the agent has a next step that is not another way around the block.</p>
+<p>Wire it in <code>.claude/settings.json</code>:</p>
+<pre><code>{
+  &quot;hooks&quot;: {
+    &quot;PreToolUse&quot;: [
+      {
+        &quot;matcher&quot;: &quot;Bash&quot;,
+        &quot;hooks&quot;: [
+          { &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;python3 \&quot;$CLAUDE_PROJECT_DIR\&quot;/.claude/hooks/block_pip.py&quot; }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+<h2>Test it without Claude Code</h2>
+<p>The hook is a function from a string to a reason, so most of it is a plain unit test:</p>
+<pre><code>from block_pip import reason
+
+def test_blocks_adhoc():
+    assert reason(&quot;pip install requests&quot;)
+    assert reason(&quot;python3 -m pip install &#x27;httpx==0.27.0&#x27;&quot;)
+
+def test_allows_lockfile_and_local():
+    for cmd in (&quot;pip install -r requirements.txt&quot;, &quot;pip install -e .&quot;,
+                &quot;pip install .&quot;, &quot;pip list&quot;, &quot;pytest -q&quot;):
+        assert reason(cmd) is None, cmd
+
+def test_misses_chained_command():
+    # one-line split only: the second command is not seen
+    assert reason(&quot;cd app &amp;&amp; pip install requests&quot;) is None</code></pre>
+<p>And the whole hook from the shell, with a fake payload:</p>
+<pre><code>$ echo &#x27;{&quot;tool_name&quot;:&quot;Bash&quot;,&quot;tool_input&quot;:{&quot;command&quot;:&quot;pip install requests&quot;}}&#x27; | python3 .claude/hooks/block_pip.py
+`pip install requests` blocked: add it to requirements.txt with a version pin, then run `pip install -r requirements.txt`.
+$ echo $?
+2</code></pre>
+<p>Then once in Claude Code itself. We ran it headless (<code>claude -p</code>, Claude Code 2.1.312), told to run <code>pip install requests</code> and not to try another install method. It was blocked, and the agent's reply quoted the hook's message word for word.</p>
+<h2>The case it misses</h2>
+<p>The third test is there on purpose. <code>cd app &amp;&amp; pip install requests</code> is one string to this hook: the first token is <code>cd</code>, so it passes.</p>
+<p>The fix is to split the line on <code>&amp;&amp;</code>, <code>||</code>, <code>;</code>, <code>|</code> and newlines before checking each part, and to skip leading <code>FOO=1</code> assignments and <code>sudo</code>. Our paid kit's <code>guard_bash.py</code> does that. Neither version sees <code>uv pip install</code>, <code>pipx</code>, or a command hidden in a script file or <code>eval</code>. A hook that reads command text is a guard against the common mistake, not a sandbox.</p>
+<h2>Where this came from</h2>
+<p>The same pattern, extended to five command types (commit while a secrets linter finds a key, <code>--no-verify</code>, force-push with <code>--force-with-lease</code> allowed, <code>rm -r</code> on <code>/</code>, <code>~</code> or the project root, and ad-hoc <code>pip install</code>), is the guard hook in our <a href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=pretooluse-hook#inside">Agent Ops Kit</a> ($29 one-time). The storefront shows a capture of it blocking real commands, unedited except for line wrapping. The free, MIT-licensed <a href="https://github.com/skibuff22/agent-ops-kit-lite">agent-ops-kit-lite</a> plugin has the CLAUDE.md scaffold, the secrets linter and a <code>/verify-claims</code> skill.</p>
+
+<div class="buy">
+  <h2>Want the five-check version?</h2>
+  <p>The <strong>Agent Ops Kit</strong> ships <code>guard_bash.py</code> with the settings.json example and 8 tests: it splits chained commands and blocks a commit while the secrets linter finds a key, <code>--no-verify</code>, force-push, <code>rm -r</code> on <code>/</code>, <code>~</code> or the project root, and ad-hoc <code>pip install</code>. $29 one-time. The free lite plugin has the CLAUDE.md scaffold, the secrets linter and <code>/verify-claims</code>.</p>
+  <div class="cta-row">
+    <a class="btn" href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=pretooluse-hook#inside">See the kit</a>
+    <a class="btn ghost" href="https://github.com/skibuff22/agent-ops-kit-lite">Get the free lite kit</a>
+  </div>
+</div>
+<p class="tiny"><em>Written by Calyx AI, a product line of Quality Tester Solutions LLC. Drafted with AI assistance; the code and outputs were run on Python 3.14.8 and Claude Code 2.1.312.</em></p>
+</article>
+</main>
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · Calyx AI · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fblog%2Fclaude-code-pretooluse-hook%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
