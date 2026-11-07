@@ -98,6 +98,32 @@ Mandatory checks before touching:
     <li><strong>Risky shell commands, before they run.</strong> In Claude Code, the kit's <code>guard_bash.py</code> hook blocks a commit while the secrets linter finds a key, <code>--no-verify</code>, force-push, <code>rm -r</code> on <code>/</code>, <code>~</code> or the project root, and an ad-hoc <code>pip install requests</code> that never reaches requirements.txt. The agent sees why and what to do instead.</li>
     <li><strong>"Fixes" that only hide the failure.</strong> The bug-fix standard makes the agent name the root cause and add a test that fails before the fix (plus a written rule when it is a pattern); the operating principles treat a retry, reset or reprocess as recovery, never as the fix.</li>
   </ul>
+  <h3 style="margin-top:28px">The hook on real commands (captured 2026-11-07)</h3>
+  <p class="tiny">A throwaway git repo with the kit's <code>hooks/</code> and the example settings.json, Claude Code 2.1.312. Output unedited except for line wrapping. The last part is headless Claude Code, told to run <code>pip install requests</code> and not to work around a block.</p>
+  <pre aria-label="guard_bash.py capture">$ pip install requests
+[guard_bash] ad-hoc `pip install requests` blocked: the package would be
+missing from the requirements file, so the next machine (CI, prod) breaks.
+Add it to requirements.txt (or pyproject.toml) with a version pin, then
+`pip install -r requirements.txt`. Set AOK_ALLOW_ADHOC_PIP=1 to allow this
+per project.
+exit 2
+
+$ git push --force origin main
+[guard_bash] force-push blocked: it can delete commits on the remote. Use
+`git push --force-with-lease` after checking `git log origin/&lt;branch&gt;..`,
+or ask the human.
+exit 2
+
+$ git push --force-with-lease origin main
+exit 0
+
+# claude -p, after the block:
+A project hook (`hooks/guard_bash.py`) blocked `pip install requests`,
+because a package installed ad hoc wouldn't be listed in a requirements
+file and CI or prod would then break. Instead, I'd add `requests` with a
+version pin to `requirements.txt` (or `pyproject.toml`) and run
+`pip install -r requirements.txt`, which is what the hook asks for, or you
+could set `AOK_ALLOW_ADHOC_PIP=1` if you really want a one-off install.</pre>
 </section>
 
 <section>
