@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCP Registry Without npm: MCPB on a GitHub Release | Calyx AI</title>
+<meta name="description" content="How we listed a Node MCP server in the official MCP registry with no npm token: an MCP Bundle on a GitHub release, GitHub OIDC, and the hash detail.">
+<link rel="canonical" href="https://calyx-ai.net/blog/mcp-registry-without-npm/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Listing an MCP server in the official registry without npm: an MCPB file on a GitHub release">
+<meta property="og:description" content="How we listed a Node MCP server in the official MCP registry with no npm token: an MCP Bundle on a GitHub release, GitHub OIDC, and the hash detail.">
+<meta property="og:url" content="https://calyx-ai.net/blog/mcp-registry-without-npm/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Article", "headline": "Listing an MCP server in the official registry without npm: an MCPB file on a GitHub release", "description": "How we listed a Node MCP server in the official MCP registry with no npm token: an MCP Bundle on a GitHub release, GitHub OIDC, and the hash detail.", "datePublished": "2026-11-09", "dateModified": "2026-11-09", "mainEntityOfPage": "https://calyx-ai.net/blog/mcp-registry-without-npm/", "author": {"@type": "Organization", "name": "Calyx AI"}, "publisher": {"@type": "Organization", "name": "Quality Tester Solutions LLC", "url": "https://calyx-ai.net/"}}
+</script>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--text:#e8e8ea;--muted:#9a9ea8;--accent:#e23d3d;--accent-2:#ff6b6b;--ok:#3ddc84}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.7}
+a{color:var(--accent-2)}
+h1,h2,h3{font-family:"Barlow Semi Condensed",system-ui,sans-serif;line-height:1.15;margin:1.6em 0 .5em;letter-spacing:.01em}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-top:.4em}h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:700}h3{font-size:1.15rem;font-weight:600}
+code,pre{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.92em}
+pre{background:#0b0d11;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;color:#d7dae0;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+article{max-width:720px;margin:0 auto;padding:40px 0 24px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{font-family:"Barlow Semi Condensed";font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none}
+.brand span{color:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1.02rem}
+.btn:hover{background:#c93232}.btn.small{padding:10px 16px;font-size:.95rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.meta,.tiny{color:var(--muted);font-size:.9rem}
+.lead{font-size:1.15rem;color:var(--muted)}
+.math{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin:18px 0}
+.math div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.math b{display:block;font-family:"Barlow Semi Condensed";font-size:1.8rem;color:var(--accent-2)}
+table{width:100%;border-collapse:collapse;font-size:.97rem}td,th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:500}
+.buy{background:linear-gradient(180deg,#1b1f28,#141720);border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center;margin:40px 0 8px}
+.buy h2{margin-top:0}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+footer{padding:36px 0;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+@media (max-width:820px){.math{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="https://calyx-ai.net/">Calyx<span>AI</span></a>
+  <nav><a class="btn small" href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=mcp-registry#publish-gate">Publish Gate</a></nav>
+</div></header>
+
+<main class="wrap">
+<article>
+<p class="meta">Calyx AI · November 9, 2026 · 6 min read</p>
+<h1>Listing an MCP server in the official registry without npm: an MCPB file on a GitHub release</h1>
+<p class="lead">Our small MCP server was ready to list in the official MCP registry, except for one thing: its <code>server.json</code> pointed at an npm package, and the repo had no npm token, so the publish step could not run. The registry accepts other package types. One of them, MCPB, needs nothing but a GitHub release. Today the server is listed that way, and npm can be added later.</p>
+<h2>What the registry accepts</h2>
+<p>The registry stores metadata, not code. <a class="tiny" href="https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/about.mdx">[source]</a> Each entry in <code>server.json</code> points at a package somewhere else, and the registry docs list npm, PyPI, NuGet, Docker/OCI, MCPB and Cargo. <a class="tiny" href="https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/package-types.mdx">[source]</a></p>
+<p>For MCPB the rules are short: the file must be on a GitHub or GitLab release, its URL must contain the string <code>mcp</code>, and <code>server.json</code> must carry the file's SHA-256 as <code>fileSha256</code>. <a class="tiny" href="https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/package-types.mdx">[source]</a></p>
+<p>With GitHub login, the server name must be <code>io.github.&lt;user&gt;/&lt;name&gt;</code>, and inside GitHub Actions that login is OIDC, so the registry login needs no stored secret. <a class="tiny" href="https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/authentication.mdx">[source]</a></p>
+<h2>1. Bundle the server</h2>
+<p>An MCP Bundle is a zip archive holding the server and a <code>manifest.json</code>. <a class="tiny" href="https://github.com/anthropics/mcpb/blob/main/README.md">[source]</a> Ours, trimmed to the parts that make it run:</p>
+<pre><code>{
+  &quot;manifest_version&quot;: &quot;0.2&quot;,
+  &quot;name&quot;: &quot;publish-gate&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;description&quot;: &quot;Check a draft&#x27;s numbers against your facts.md and its links before you publish.&quot;,
+  &quot;author&quot;: { &quot;name&quot;: &quot;Calyx AI (Quality Tester Solutions LLC)&quot; },
+  &quot;server&quot;: {
+    &quot;type&quot;: &quot;node&quot;,
+    &quot;entry_point&quot;: &quot;server.js&quot;,
+    &quot;mcp_config&quot;: { &quot;command&quot;: &quot;node&quot;, &quot;args&quot;: [&quot;${__dirname}/server.js&quot;], &quot;env&quot;: {} }
+  },
+  &quot;license&quot;: &quot;MIT&quot;
+}</code></pre>
+<p>The server has no dependencies, so there is no <code>node_modules</code> to ship. A <code>.mcpbignore</code> keeps the tests and <code>server.json</code> out:</p>
+<pre><code>$ npx -y @anthropic-ai/mcpb@2.1.2 validate manifest.json
+Manifest schema validation passes!
+$ npx -y @anthropic-ai/mcpb@2.1.2 pack . publish-gate.mcpb</code></pre>
+<p>The bundle came out with four files: <code>server.js</code>, <code>README.md</code>, <code>package.json</code> and <code>manifest.json</code>. Before trusting it, we unpacked it, ran the server's 6 tests against the unpacked copy, and sent it an <code>initialize</code> and a <code>check_numbers</code> call over stdio. Both answered.</p>
+<h2>2. Hash the file you upload, not a rebuild</h2>
+<p>This is the part that bites. We packed the same four files twice and got two different SHA-256 values, and both differed from the file we had already uploaded. The file contents matched (same CRC for every entry); the entry timestamps did not, so a rebuild is a new file.</p>
+<p>So the hash goes into <code>server.json</code> from the exact file that goes on the release:</p>
+<pre><code>$ sha256sum publish-gate.mcpb
+1b032ae3ce70dc974726da444fe0e448ae8bdfa39a92d53bd1001c9f51ff4aca  publish-gate.mcpb</code></pre>
+<pre><code>&quot;packages&quot;: [
+  {
+    &quot;registryType&quot;: &quot;mcpb&quot;,
+    &quot;identifier&quot;: &quot;https://github.com/skibuff22/agent-ops-kit-lite/releases/download/mcp-v0.1.0/publish-gate.mcpb&quot;,
+    &quot;fileSha256&quot;: &quot;1b032ae3ce70dc974726da444fe0e448ae8bdfa39a92d53bd1001c9f51ff4aca&quot;,
+    &quot;transport&quot;: { &quot;type&quot;: &quot;stdio&quot; }
+  }
+]</code></pre>
+<p><code>mcp-publisher validate</code> checks the file against the live registry before anything is published (its success line starts with a check-mark emoji, left out here):</p>
+<pre><code>$ mcp-publisher validate
+Validating against https://registry.modelcontextprotocol.io...
+server.json is valid</code></pre>
+<h2>3. Release, then publish from Actions</h2>
+<p>The workflow runs on a <code>mcp-v*</code> tag. It does not rebuild the bundle. It downloads the release asset and refuses to publish if the asset's hash differs from <code>server.json</code>:</p>
+<pre><code>permissions:
+  id-token: write
+  contents: read
+steps:
+  - uses: actions/checkout@v4
+  - run: npm test
+  - name: Release asset matches server.json
+    run: |
+      gh release download &quot;$TAG&quot; -R &quot;$GITHUB_REPOSITORY&quot; -p publish-gate.mcpb -D /tmp/rel
+      want=$(node -e &#x27;const s=require(&quot;./server.json&quot;);const p=s.packages.find(p=&gt;p.registryType===&quot;mcpb&quot;);console.log(p?p.fileSha256:&quot;&quot;)&#x27;)
+      got=$(sha256sum /tmp/rel/publish-gate.mcpb | cut -d&quot; &quot; -f1)
+      test -n &quot;$want&quot; &amp;&amp; test &quot;$want&quot; = &quot;$got&quot;
+  - run: curl -L &quot;https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz&quot; | tar xz mcp-publisher
+  - run: ./mcp-publisher login github-oidc
+  - run: ./mcp-publisher publish</code></pre>
+<p>(Shortened. The full file also has a manual <code>workflow_dispatch</code> trigger, a <code>setup-node</code> step, the working directory, <code>GH_TOKEN</code> and <code>TAG</code>, and an npm step that skips itself when there is no <code>NPM_TOKEN</code> secret.) <code>id-token: write</code> is what the OIDC login needs; <code>contents: read</code> was enough to download a release asset from a public repo.</p>
+<p>Then one command, after <code>server.json</code> with the hash was pushed:</p>
+<pre><code>$ gh release create mcp-v0.1.0 publish-gate.mcpb --target master --notes-file notes.md</code></pre>
+<p>That created the tag and the tag started the workflow. The run took 17 seconds: tests and hash check passed, npm skipped, and the last step printed <code>Successfully published</code>.</p>
+<h2>4. Check the registry, not the log</h2>
+<pre><code>$ curl -s &quot;https://registry.modelcontextprotocol.io/v0/servers?search=io.github.skibuff22/publish-gate&quot;</code></pre>
+<p>The reply holds the <code>server.json</code> we sent plus the registry's own <code>_meta</code> block: <code>&quot;status&quot;: &quot;active&quot;</code>, <code>&quot;isLatest&quot;: true</code>.</p>
+<h2>What this does not cover</h2>
+<p>We have not installed the <code>.mcpb</code> in a client that opens bundles; the install path we have tested is still the clone plus <code>claude mcp add</code>. And with npm missing, <code>npx -y publish-gate-mcp</code> does not work yet. When npm is set up, the plan is a new version whose <code>server.json</code> lists both packages.</p>
+<h2>The server</h2>
+<p>The server is <code>publish-gate</code>, two checks to run on a draft before it goes out: numbers that are not in your facts file, and dead links. It is free in the MIT-licensed <a href="https://github.com/skibuff22/agent-ops-kit-lite">agent-ops-kit-lite</a> repo. The paid <a href="https://calyx-ai.net/?utm_source=blog&amp;amp;utm_medium=article&amp;amp;utm_campaign=mcp-registry#publish-gate">Publish Gate</a> adds more checks and publishers that refuse a changed draft ($19, Quality Tester Solutions LLC).</p>
+
+<div class="buy">
+  <h2>Want the full gate?</h2>
+  <p>The free MCP server has two of the Publish Gate's checks (numbers, links). The paid <strong>Publish Gate</strong> also checks front matter, banned phrases, emoji, exclamation-mark count, em-dash density and rhetorical openers, and its publishers refuse a draft whose body changed after it passed. $19 one-time.</p>
+  <div class="cta-row">
+    <a class="btn" href="https://calyx-ai.net/?utm_source=blog&amp;utm_medium=article&amp;utm_campaign=mcp-registry#publish-gate">See Publish Gate</a>
+    <a class="btn ghost" href="https://github.com/skibuff22/agent-ops-kit-lite">Get the free lite kit</a>
+  </div>
+</div>
+<p class="tiny"><em>Drafted with AI assistance. The local commands above were run on 2026-11-09 (Node v26.7.0, mcpb 2.1.2), the workflow ran in GitHub Actions the same day, and the registry entry was checked through its API.</em></p>
+</article>
+</main>
+<footer><div class="wrap">
+  <p>© 2026 Quality Tester Solutions LLC · Calyx AI · Contact: <a href="mailto:tdoane@calyx-ai.net">tdoane@calyx-ai.net</a></p>
+</div></footer>
+<script>/* E5 first-party beacon: path, referrer host, utm_* only. No cookies, no IP. */
+(function(){var B="https://api.qualitytester.us/store/",s=location.search,src;
+try{src=(new URLSearchParams(s)).get("utm_source")||sessionStorage.getItem("aok_src")||"";if(src)sessionStorage.setItem("aok_src",src);}catch(e){src="";}
+new Image().src=B+"hit.php?p="+encodeURIComponent(location.pathname)+"&q="+encodeURIComponent(s)+"&r="+encodeURIComponent(document.referrer);
+if(src)document.querySelectorAll('a[href^="'+B+'checkout.php"]').forEach(function(a){a.href+="&src="+encodeURIComponent(src);});})();
+</script>
+<noscript><img src="https://api.qualitytester.us/store/hit.php?p=%2Fblog%2Fmcp-registry-without-npm%2Fnoscript" alt="" width="1" height="1" style="position:absolute"></noscript>
+</body>
+</html>
